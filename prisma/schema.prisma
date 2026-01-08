@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Users for authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ingredients Ingredient[]
+  products    Product[]
+  sales       Sale[]
+}
+
+// Ingredients that go into Pizzas or are sold directly (if applicable, though usually Products are sold)
+model Ingredient {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  unit        String // e.g., "kg", "grams", "liters", "units"
+  cost        Float // Cost per unit
+  isActive    Boolean  @default(true)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  recipeItems RecipeItem[]
+
+  @@index([name])
+  @@index([isActive])
+  @@index([userId])
+}
+
+// Products are what is actually sold (Pizzas, Sodas, etc.)
+model Product {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name         String
+  type         String // "PIZZA", "BEVERAGE", "OTHER" - could be an enum but string is flexible for SQLite
+  category     String? // e.g., "Clasicas", "Gourmet", "Bebidas Alcoholicas"
+  basePrice    Float
+  isActive     Boolean      @default(true)
+  description  String?
+  receipeItems RecipeItem[] // Only relevant for complex products like Pizzas
+
+  saleItems SaleItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([type])
+  @@index([isActive])
+  @@index([userId])
+}
+
+// Link Table to define what ingredients go into a Product (mostly for Pizzas)
+model RecipeItem {
+  id String @id @default(cuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  quantity Float // Amount of ingredient used per 1 unit of Product
+  unit     String @default("unit") // Unit used in recipe (e.g. grams)
+
+  @@unique([productId, ingredientId])
+  @@index([productId])
+  @@index([ingredientId])
+}
+
+// A Sale transaction
+model Sale {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalAmount Float
+  dateTime    DateTime @default(now())
+
+  items SaleItem[]
+
+  @@index([dateTime])
+  @@index([userId])
+}
+
+// Individual items in a Sale
+model SaleItem {
+  id String @id @default(cuid())
+
+  saleId String
+  sale   Sale   @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity  Int
+  unitPrice Float // Snapshot of price at time of sale
+  unitCost  Float @default(0) // Snapshot of cost at time of sale
+
+  @@index([saleId])
+  @@index([productId])
+}
