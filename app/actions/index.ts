@@ -5,26 +5,17 @@
 
 // Ingredient actions
 export {
-    getIngredients,
-    createIngredient,
-    deleteIngredient,
-    updateIngredient
-} from './ingredients'
+  getIngredients,
+  createIngredient,
+  deleteIngredient,
+  updateIngredient,
+} from "./ingredients";
 
 // Product actions
-export {
-    getProducts,
-    createProduct,
-    deleteProduct
-} from './products'
+export { getProducts, createProduct, deleteProduct } from "./products";
 
 // Sales actions
-export {
-    recordSale,
-    getSales
-} from './sales'
+export { recordSale, getRecentSales } from "./sales";
 
 // Dashboard actions
-export {
-    getDashboardStats
-} from './dashboard'
+export { getDashboardStats } from "./dashboard";
