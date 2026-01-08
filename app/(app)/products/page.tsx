@@ -1,19 +1,19 @@
-import { getIngredients, getProducts, deleteProduct } from '../actions'
-import { ProductForm } from '../components/ProductForm'
-import { Card, PageHeader } from '../components/ui'
+import { getIngredients, getProducts, deleteProduct } from "../../actions";
+import { ProductForm } from "../../components/ProductForm";
+import { Card, PageHeader } from "../../components/ui";
 
 export default async function ProductsPage() {
   const [ingredients, products] = await Promise.all([
     getIngredients(),
-    getProducts()
-  ])
+    getProducts(),
+  ]);
 
   return (
     <div className="min-h-screen p-8 space-y-8">
       <PageHeader
         title="Productos & Recetas"
         gradient="purple"
-        backLink={{ href: 'dashboard/', label: 'Volver al Dashboard' }}
+        backLink={{ href: "dashboard/", label: "Volver al Dashboard" }}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -23,7 +23,9 @@ export default async function ProductsPage() {
 
         <div className="lg:col-span-2">
           <Card variant="default">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Catalogo de Productos</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">
+              Catalogo de Productos
+            </h2>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -39,11 +41,17 @@ export default async function ProductsPage() {
                 </thead>
                 <tbody>
                   {products.map((product) => {
-                    const margin = product.basePrice - product.cost
-                    const marginPercent = product.basePrice > 0 ? (margin / product.basePrice) * 100 : 0
+                    const margin = product.basePrice - product.cost;
+                    const marginPercent =
+                      product.basePrice > 0
+                        ? (margin / product.basePrice) * 100
+                        : 0;
 
                     return (
-                      <tr key={product.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
+                      <tr
+                        key={product.id}
+                        className="border-b border-white/5 hover:bg-white/5 transition-colors group"
+                      >
                         <td className="p-3 font-medium text-gray-900">
                           {product.name}
                           {product.receipeItems.length > 0 && (
@@ -52,14 +60,26 @@ export default async function ProductsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="p-3 text-gray-600 text-sm">{product.type}</td>
-                        <td className="p-3 text-right text-gray-600">${product.basePrice.toFixed(2)}</td>
-                        <td className="p-3 text-right text-red-400 font-mono">${product.cost.toFixed(2)}</td>
+                        <td className="p-3 text-gray-600 text-sm">
+                          {product.type}
+                        </td>
+                        <td className="p-3 text-right text-gray-600">
+                          ${product.basePrice.toFixed(2)}
+                        </td>
+                        <td className="p-3 text-right text-red-400 font-mono">
+                          ${product.cost.toFixed(2)}
+                        </td>
                         <td className="p-3 text-right font-mono">
-                          <div className={margin > 0 ? "text-green-400" : "text-red-500"}>
+                          <div
+                            className={
+                              margin > 0 ? "text-green-400" : "text-red-500"
+                            }
+                          >
                             ${margin.toFixed(2)}
                           </div>
-                          <div className="text-xs text-gray-500">{marginPercent.toFixed(0)}%</div>
+                          <div className="text-xs text-gray-500">
+                            {marginPercent.toFixed(0)}%
+                          </div>
                         </td>
                         <td className="p-3 text-right">
                           <form action={deleteProduct.bind(null, product.id)}>
@@ -69,11 +89,14 @@ export default async function ProductsPage() {
                           </form>
                         </td>
                       </tr>
-                    )
+                    );
                   })}
                   {products.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-gray-500 italic">
+                      <td
+                        colSpan={6}
+                        className="p-8 text-center text-gray-500 italic"
+                      >
                         No se encontraron productos. ¡Crea tu primera Pizza!
                       </td>
                     </tr>
@@ -85,6 +108,5 @@ export default async function ProductsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
