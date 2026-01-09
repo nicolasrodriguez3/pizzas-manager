@@ -18,7 +18,7 @@ export default async function ProductsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <ProductForm ingredients={ingredients} />
+          <ProductForm ingredients={ingredients} products={products} />
         </div>
 
         <div className="lg:col-span-2">
@@ -54,11 +54,12 @@ export default async function ProductsPage() {
                       >
                         <td className="p-3 font-medium text-gray-900">
                           {product.name}
-                          {product.receipeItems.length > 0 && (
-                            <span className="ml-2 text-xs text-gray-500 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
-                              {product.receipeItems.length} ingr.
-                            </span>
-                          )}
+                          {product.receipeItems &&
+                            product.receipeItems.length > 0 && (
+                              <span className="ml-2 text-xs text-gray-500 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
+                                {product.receipeItems.length} items
+                              </span>
+                            )}
                         </td>
                         <td className="p-3 text-gray-600 text-sm">
                           {product.type}

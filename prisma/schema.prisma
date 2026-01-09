@@ -57,7 +57,10 @@ model Product {
   basePrice    Float
   isActive     Boolean      @default(true)
   description  String?
-  receipeItems RecipeItem[] // Only relevant for complex products like Pizzas
+  receipeItems RecipeItem[] @relation("ProductRecipe") // Only relevant for complex products like Pizzas
+
+  // New relation for when this product is used in another product's recipe
+  usedInRecipes RecipeItem[] @relation("SubProductRecipe")
 
   saleItems SaleItem[]
 
@@ -75,17 +78,22 @@ model RecipeItem {
   id String @id @default(cuid())
 
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation("ProductRecipe", fields: [productId], references: [id], onDelete: Cascade)
 
-  ingredientId String
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
 
-  quantity Float // Amount of ingredient used per 1 unit of Product
+  subProductId String?
+  subProduct   Product? @relation("SubProductRecipe", fields: [subProductId], references: [id], onDelete: Restrict)
+
+  quantity Float // Amount of ingredient/subproduct used per 1 unit of Product
   unit     String @default("unit") // Unit used in recipe (e.g. grams)
 
   @@unique([productId, ingredientId])
+  @@unique([productId, subProductId])
   @@index([productId])
   @@index([ingredientId])
+  @@index([subProductId])
 }
 
 // A Sale transaction

@@ -60,7 +60,7 @@ export default async function IngredientsPage() {
                     <tr>
                       <td
                         colSpan={4}
-                        className="p-8 text-center text-gray-900 italic"
+                        className="p-8 text-center text-gray-500 italic"
                       >
                         No se encontraron ingredientes. Agrega uno para
                         comenzar.
