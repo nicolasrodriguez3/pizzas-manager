@@ -1,9 +1,19 @@
 import { getIngredients, deleteIngredient } from "../../actions";
 import { IngredientForm } from "../../components/IngredientForm";
 import { Card, PageHeader } from "../../components/ui";
+import Link from "next/link";
 
-export default async function IngredientsPage() {
+interface PageProps {
+  searchParams: Promise<{ edit?: string }>;
+}
+
+export default async function IngredientsPage({ searchParams }: PageProps) {
+  const { edit } = await searchParams;
   const ingredients = await getIngredients();
+
+  const editingIngredient = edit
+    ? ingredients.find((ing) => ing.id === edit)
+    : undefined;
 
   return (
     <div className="min-h-screen p-8 space-y-8">
@@ -15,7 +25,7 @@ export default async function IngredientsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <IngredientForm />
+          <IngredientForm ingredient={editingIngredient} />
         </div>
 
         <div className="lg:col-span-2">
@@ -38,7 +48,11 @@ export default async function IngredientsPage() {
                   {ingredients.map((ing) => (
                     <tr
                       key={ing.id}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors group"
+                      className={`border-b border-white/5 hover:bg-white/5 transition-colors group ${
+                        editingIngredient?.id === ing.id
+                          ? "bg-orange-500/10"
+                          : ""
+                      }`}
                     >
                       <td className="p-3 font-medium text-gray-900">
                         {ing.name}
@@ -48,11 +62,19 @@ export default async function IngredientsPage() {
                         ${ing.cost.toFixed(2)}
                       </td>
                       <td className="p-3 text-right">
-                        <form action={deleteIngredient.bind(null, ing.id)}>
-                          <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
-                            Borrar
-                          </button>
-                        </form>
+                        <div className="flex justify-end gap-2 items-center">
+                          <Link
+                            href={`/ingredients?edit=${ing.id}`}
+                            className="text-sm px-3 py-1 rounded bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100"
+                          >
+                            Editar
+                          </Link>
+                          <form action={deleteIngredient.bind(null, ing.id)}>
+                            <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
+                              Borrar
+                            </button>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   ))}
