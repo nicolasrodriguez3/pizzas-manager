@@ -8,9 +8,7 @@ export default function RegisterPage() {
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-red-600 mb-2">
             Pizza Manager
           </h1>
-          <h2 className="mt-6 text-2xl font-bold text-white">
-            Create your account
-          </h2>
+          <h2 className="mt-6 text-2xl font-bold text-white">Crear Cuenta</h2>
         </div>
         <RegisterForm />
       </div>
