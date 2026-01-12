@@ -4,7 +4,7 @@ import { createProduct } from "@/app/actions";
 import {
   PRODUCT_TYPES,
   PRODUCT_TYPE_LABELS,
-  DEFAULT_SUBCATEGORIES,
+  DEFAULT_CATEGORIES,
   UNITS,
   type ProductType,
 } from "@/app/config/constants";
@@ -59,16 +59,14 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
     initialState
   );
   const [productType, setProductType] = useState<ProductType>("ELABORADO");
-  const [subCategory, setSubCategory] = useState(
-    DEFAULT_SUBCATEGORIES.ELABORADO[0]
-  );
+  const [category, setCategory] = useState(DEFAULT_CATEGORIES.ELABORADO[0]);
   const [recipeItems, setRecipeItems] = useState<RecipeItemInput[]>([]);
   const [clientError, setClientError] = useState<React.ReactNode>("");
 
-  // Update subcategory when product type changes
+  // Update category when product type changes
   const handleTypeChange = (newType: ProductType) => {
     setProductType(newType);
-    setSubCategory(DEFAULT_SUBCATEGORIES[newType][0]);
+    setCategory(DEFAULT_CATEGORIES[newType][0]);
     // Clear recipe items when switching away from ELABORADO
     if (newType !== "ELABORADO") {
       setRecipeItems([]);
@@ -213,19 +211,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Categoría
-            </label>
-            <input
-              name="category"
-              type="text"
-              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="e.g., Clásicas"
-            />
-          </div>
-
+        <div className="">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
               Tipo
@@ -243,27 +229,39 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               ))}
             </select>
           </div>
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Subcategoría
+              Categoría
             </label>
             <select
-              name="subCategory"
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
+              name="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              {DEFAULT_SUBCATEGORIES[productType].map((sub) => (
+              {DEFAULT_CATEGORIES[productType].map((sub) => (
                 <option key={sub} value={sub}>
                   {sub}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4"></div>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Subcategoría (Opcional)
+            </label>
+            <input
+              name="subCategory"
+              type="text"
+              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="e.g., Clásicas"
+            />
+          </div>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-1">

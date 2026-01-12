@@ -21,8 +21,8 @@ export const PRODUCT_TYPE_ICONS: Record<ProductType, string> = {
   OTHER: "🛒",
 };
 
-// Default subcategories per product type
-export const DEFAULT_SUBCATEGORIES: Record<ProductType, string[]> = {
+// Default categories per product type
+export const DEFAULT_CATEGORIES: Record<ProductType, string[]> = {
   ELABORADO: ["Pizzas", "Empanadas", "Pastas", "Otros"],
   REVENTA: ["Bebidas", "Snacks", "Otros"],
   OTHER: ["Otros"],
