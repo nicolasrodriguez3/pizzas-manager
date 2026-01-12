@@ -170,7 +170,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
   }, 0);
 
   return (
-    <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+    <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-gray-900/10 shadow-xl">
       <h2 className="text-xl font-bold mb-4 text-gray-900">Crear Producto</h2>
       <form action={createRecipe} className="space-y-4">
         <div>
@@ -181,7 +181,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             name="name"
             type="text"
             required
-            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-white/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="e.g., Margherita Pizza"
           />
         </div>
@@ -193,7 +193,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
           <textarea
             name="description"
             rows={2}
-            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-white/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
             placeholder="Ingredientes clave, alérgenos, etc."
           />
         </div>
@@ -206,7 +206,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             <input
               name="category"
               type="text"
-              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-white/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="e.g., Clásicas"
             />
           </div>
@@ -219,7 +219,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               name="type"
               value={productType}
               onChange={(e) => setProductType(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-white/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               {PRODUCT_TYPES.map((type) => (
                 <option key={type} value={type} className="">
@@ -240,19 +240,19 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             step="1"
             min="0"
             required
-            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-white/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="0.00"
           />
         </div>
 
         {productType === "PIZZA" && (
-          <div className="mt-4 p-4 rounded-lg bg-black/5 border border-white/5">
+          <div className="mt-4 p-4 rounded-lg bg-black/5 border border-gray-900/10">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-gray-900">
                 Receta (Ingredientes)
               </h3>
-              <span className="text-sm text-green-700 bg-green-900/10 px-2 py-1 rounded">
-                Costo Est.: ${currentCost.toFixed(2)}
+              <span className="text-sm font-medium text-green-600 bg-green-50/80 px-2 py-1 rounded">
+                Costo Estimado: ${currentCost.toFixed(2)}
               </span>
             </div>
 
@@ -277,17 +277,17 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                     onChange={(e) =>
                       updateItem(index, "ingredientId", e.target.value)
                     }
-                    className="flex-2 min-w-[120px] px-3 py-1.5 rounded-md bg-black/20 border border-white/10 text-white text-sm"
+                    className="flex-2 min-w-[120px] px-2 py-1.5 rounded-md bg-black/10 border border-gray-900/10 text-gray-900 text-sm"
                   >
                     <optgroup
                       label="Ingredientes"
-                      className="bg-neutral-900 text-purple-300"
+                      className="bg-gray-50 text-purple-500"
                     >
                       {ingredients.map((ing) => (
                         <option
                           key={ing.id}
                           value={`ing_${ing.id}`}
-                          className="bg-neutral-900 text-white"
+                          className="bg-gray-50 text-gray-900"
                         >
                           {ing.name} (${ing.cost}/{ing.unit})
                         </option>
@@ -295,13 +295,13 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                     </optgroup>
                     <optgroup
                       label="Productos"
-                      className="bg-neutral-900 text-indigo-300"
+                      className="bg-gray-50 text-indigo-500"
                     >
                       {products.map((prod) => (
                         <option
                           key={prod.id}
                           value={`prod_${prod.id}`}
-                          className="bg-neutral-900 text-white"
+                          className="bg-gray-50 text-gray-900"
                         >
                           {prod.name} (Costo: ${prod.cost.toFixed(2)})
                         </option>
@@ -318,13 +318,13 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                       updateItem(index, "quantity", parseFloat(e.target.value))
                     }
                     placeholder="Qty"
-                    className="w-20 px-3 py-1.5 rounded-md bg-black/20 border border-white/10 text-white text-sm placeholder-white/50"
+                    className="w-20 px-3 py-1.5 rounded-md bg-black/10 border border-gray-900/10 text-gray-900 text-sm placeholder-gray-800/50"
                   />
 
                   <select
                     value={item.unit}
                     onChange={(e) => updateItem(index, "unit", e.target.value)}
-                    className="w-24 px-3 py-1.5 rounded-md bg-black/20 border border-white/10 text-white text-sm"
+                    className="w-24 px-3 py-1.5 rounded-md bg-black/10 border border-gray-900/10 text-gray-900 text-sm"
                   >
                     {UNITS.map((unit) => (
                       <option
@@ -351,7 +351,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             <button
               type="button"
               onClick={addIngredient}
-              className="text-sm text-purple-700 hover:text-purple-600 flex items-center gap-1"
+              className="text-sm text-purple-600 hover:text-purple-500 flex items-center gap-1"
             >
               + Agregar Ingrediente
             </button>

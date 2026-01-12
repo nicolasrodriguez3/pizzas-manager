@@ -16,7 +16,7 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
     : undefined;
 
   return (
-    <div className="min-h-screen p-8 space-y-8">
+    <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">
       <PageHeader
         title="Ingredientes"
         gradient="orange"

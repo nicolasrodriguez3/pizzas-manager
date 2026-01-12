@@ -38,7 +38,7 @@ export function IngredientForm({ ingredient }: IngredientFormProps) {
   }, [state, isEditing, router]);
 
   return (
-    <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+    <div className="p-6 rounded-2xl bg-gray-400/10 backdrop-blur-md border border-gray-400/20 shadow-xl">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">
           {isEditing ? "Editar Ingrediente" : "Agregar Ingrediente"}

@@ -9,7 +9,7 @@ export default async function ProductsPage() {
   ]);
 
   return (
-    <div className="min-h-screen p-8 space-y-8">
+    <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">
       <PageHeader
         title="Productos & Recetas"
         gradient="purple"
@@ -52,11 +52,11 @@ export default async function ProductsPage() {
                         key={product.id}
                         className="border-b border-white/5 hover:bg-white/5 transition-colors group"
                       >
-                        <td className="p-3 font-medium text-gray-900">
+                        <td className="p-3 font-medium text-gray-700">
                           {product.name}
                           {product.receipeItems &&
                             product.receipeItems.length > 0 && (
-                              <span className="ml-2 text-xs text-gray-500 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
+                              <span className="ml-2 text-xs text-gray-50 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
                                 {product.receipeItems.length} items
                               </span>
                             )}
@@ -78,7 +78,7 @@ export default async function ProductsPage() {
                           >
                             ${margin.toFixed(2)}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-600">
                             {marginPercent.toFixed(0)}%
                           </div>
                         </td>

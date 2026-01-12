@@ -1,27 +1,268 @@
 @import "tailwindcss";
 
+/* ===========================================
+   DESIGN SYSTEM - Pizzas Manager
+   =========================================== */
+
 :root {
+  /* ─── Colores Base ─────────────────────── */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ─── Superficies ──────────────────────── */
+  --surface: #ffffff;
+  --surface-secondary: #f9fafb;
+  --surface-tertiary: #f3f4f6;
+  --surface-elevated: #ffffff;
+
+  /* ─── Bordes ───────────────────────────── */
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-strong: #d1d5db;
+
+  /* ─── Colores Primarios (Purple/Indigo) ── */
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-active: #6d28d9;
+  --primary-light: #ede9fe;
+  --primary-foreground: #ffffff;
+
+  /* ─── Colores Secundarios ──────────────── */
+  --secondary: #6b7280;
+  --secondary-hover: #4b5563;
+  --secondary-light: #f3f4f6;
+  --secondary-foreground: #1f2937;
+
+  /* ─── Accent ───────────────────────────── */
+  --accent: #06b6d4;
+  --accent-hover: #0891b2;
+  --accent-light: #cffafe;
+  --accent-foreground: #ffffff;
+
+  /* ─── Estados Semánticos ───────────────── */
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-light: #d1fae5;
+  --success-foreground: #ffffff;
+
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-light: #fef3c7;
+  --warning-foreground: #1f2937;
+
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-light: #fee2e2;
+  --danger-foreground: #ffffff;
+
+  --info: #3b82f6;
+  --info-hover: #2563eb;
+  --info-light: #dbeafe;
+  --info-foreground: #ffffff;
+
+  /* ─── Texto ────────────────────────────── */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+  --text-disabled: #d1d5db;
+  --text-inverse: #ffffff;
+
+  /* ─── Sombras ──────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ─── Radios ───────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* ─── Espaciado (scale) ────────────────── */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* ─── Transiciones ─────────────────────── */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
 }
 
+/* ─── Modo Oscuro ────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Colores Base */
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    /* Superficies */
+    --surface: #171717;
+    --surface-secondary: #1f1f1f;
+    --surface-tertiary: #262626;
+    --surface-elevated: #1f1f1f;
+
+    /* Bordes */
+    --border: #2e2e2e;
+    --border-light: #262626;
+    --border-strong: #404040;
+
+    /* Primario (más brillante en dark mode) */
+    --primary: #a78bfa;
+    --primary-hover: #8b5cf6;
+    --primary-active: #7c3aed;
+    --primary-light: #2e1065;
+    --primary-foreground: #0a0a0a;
+
+    /* Secundario */
+    --secondary: #9ca3af;
+    --secondary-hover: #d1d5db;
+    --secondary-light: #262626;
+    --secondary-foreground: #f9fafb;
+
+    /* Accent */
+    --accent: #22d3ee;
+    --accent-hover: #06b6d4;
+    --accent-light: #164e63;
+    --accent-foreground: #0a0a0a;
+
+    /* Estados Semánticos */
+    --success: #34d399;
+    --success-hover: #10b981;
+    --success-light: #064e3b;
+    --success-foreground: #0a0a0a;
+
+    --warning: #fbbf24;
+    --warning-hover: #f59e0b;
+    --warning-light: #451a03;
+    --warning-foreground: #0a0a0a;
+
+    --danger: #f87171;
+    --danger-hover: #ef4444;
+    --danger-light: #450a0a;
+    --danger-foreground: #0a0a0a;
+
+    --info: #60a5fa;
+    --info-hover: #3b82f6;
+    --info-light: #1e3a5f;
+    --info-foreground: #0a0a0a;
+
+    /* Texto */
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #6b7280;
+    --text-disabled: #404040;
+    --text-inverse: #111827;
+
+    /* Sombras (más sutiles en dark) */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4),
+      0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4),
+      0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5),
+      0 8px 10px -6px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* ─── Tailwind Theme Integration ─────────── */
 @theme inline {
+  /* Colores base */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Superficies */
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-elevated: var(--surface-elevated);
+
+  /* Bordes */
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-border-strong: var(--border-strong);
+
+  /* Primary */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-light: var(--primary-light);
+  --color-primary-foreground: var(--primary-foreground);
+
+  /* Secondary */
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  /* Accent */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* Estados */
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-success-light: var(--success-light);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-light: var(--warning-light);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-light: var(--danger-light);
+  --color-danger-foreground: var(--danger-foreground);
+
+  --color-info: var(--info);
+  --color-info-hover: var(--info-hover);
+  --color-info-light: var(--info-light);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Texto */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Fuentes */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Estilos Base ───────────────────────── */
 body {
-  /* background: #ededed; */
-  /* color: #242424; */
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  transition: background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+/* ─── Utilidades Personalizadas ──────────── */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Focus ring consistente */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline-color: var(--primary);
 }
