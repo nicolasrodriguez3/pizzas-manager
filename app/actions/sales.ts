@@ -37,8 +37,14 @@ export async function recordSale(items: SaleItemInput[]) {
     if (!product) continue; // Should not happen
 
     let unitCost = 0;
-    if (product.receipeItems && product.receipeItems.length > 0) {
+    if (
+      product.type === "ELABORADO" &&
+      product.receipeItems &&
+      product.receipeItems.length > 0
+    ) {
       unitCost = product.receipeItems.reduce((acc, recipeItem) => {
+        if (!recipeItem.ingredient) return acc;
+
         return (
           acc +
           convertCost(
@@ -49,6 +55,9 @@ export async function recordSale(items: SaleItemInput[]) {
           )
         );
       }, 0);
+    } else {
+      // For REVENTA or OTHER products, use the manual cost
+      unitCost = product.manualCost || 0;
     }
 
     totalAmount += product.basePrice * item.quantity;
