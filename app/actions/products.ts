@@ -71,10 +71,16 @@ export async function getProducts() {
 
   // Efficient calculation for the initial list
   const productsWithCost = products.map((product) => {
-    const calculateCost = (prod: any): number => {
+    // For REVENTA and OTHER products, use manualCost
+    if (product.type !== "ELABORADO") {
+      return { ...product, cost: product.manualCost ?? 0 };
+    }
+
+    // For ELABORADO products, calculate from recipe
+    const calculateCost = (prod: typeof product): number => {
       let cost = 0;
       if (prod.receipeItems) {
-        prod.receipeItems.forEach((item: any) => {
+        prod.receipeItems.forEach((item) => {
           if (item.ingredientId && item.ingredient) {
             cost += convertCost(
               item.quantity,
@@ -84,7 +90,8 @@ export async function getProducts() {
             );
           } else if (item.subProductId && item.subProduct) {
             // Recurse into subproduct
-            cost += item.quantity * calculateCost(item.subProduct);
+            cost +=
+              item.quantity * calculateCost(item.subProduct as typeof prod);
           }
         });
       }
@@ -108,11 +115,18 @@ export async function createProduct(
   const name = formData.get("name") as string;
   const type = formData.get("type") as string;
   const category = formData.get("category") as string | null;
+  const subCategory = formData.get("subCategory") as string | null;
   const description = formData.get("description") as string | null;
   const basePrice = parseFloat(formData.get("basePrice") as string);
 
+  // Manual cost is only for REVENTA and OTHER products
+  const manualCostStr = formData.get("manualCost") as string | null;
+  const manualCost = manualCostStr ? parseFloat(manualCostStr) : null;
+
+  // Recipe items are only for ELABORADO products
   const recipeItemsJson = formData.get("recipeItems") as string;
-  const recipeItems = recipeItemsJson ? JSON.parse(recipeItemsJson) : [];
+  const recipeItems =
+    type === "ELABORADO" && recipeItemsJson ? JSON.parse(recipeItemsJson) : [];
 
   if (!name || name.trim() === "") {
     return { message: "El nombre es requerido" };
@@ -139,17 +153,22 @@ export async function createProduct(
       name: name.trim(),
       type,
       category: category ? category.trim() : null,
+      subCategory: subCategory ? subCategory.trim() : null,
       description: description ? description.trim() : null,
       basePrice,
+      manualCost: type !== "ELABORADO" ? manualCost : null,
       userId: session.user.id,
-      receipeItems: {
-        create: recipeItems.map((item: RecipeItemInput) => ({
-          ingredientId: item.ingredientId || null,
-          subProductId: item.subProductId || null,
-          quantity: item.quantity,
-          unit: item.unit,
-        })),
-      },
+      receipeItems:
+        type === "ELABORADO"
+          ? {
+              create: recipeItems.map((item: RecipeItemInput) => ({
+                ingredientId: item.ingredientId || null,
+                subProductId: item.subProductId || null,
+                quantity: item.quantity,
+                unit: item.unit,
+              })),
+            }
+          : undefined,
     },
   });
 

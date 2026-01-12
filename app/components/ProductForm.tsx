@@ -4,7 +4,9 @@ import { createProduct } from "@/app/actions";
 import {
   PRODUCT_TYPES,
   PRODUCT_TYPE_LABELS,
+  DEFAULT_SUBCATEGORIES,
   UNITS,
+  type ProductType,
 } from "@/app/config/constants";
 import type {
   Ingredient,
@@ -56,9 +58,22 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
     createProduct,
     initialState
   );
-  const [productType, setProductType] = useState("PIZZA");
+  const [productType, setProductType] = useState<ProductType>("ELABORADO");
+  const [subCategory, setSubCategory] = useState(
+    DEFAULT_SUBCATEGORIES.ELABORADO[0]
+  );
   const [recipeItems, setRecipeItems] = useState<RecipeItemInput[]>([]);
   const [clientError, setClientError] = useState<React.ReactNode>("");
+
+  // Update subcategory when product type changes
+  const handleTypeChange = (newType: ProductType) => {
+    setProductType(newType);
+    setSubCategory(DEFAULT_SUBCATEGORIES[newType][0]);
+    // Clear recipe items when switching away from ELABORADO
+    if (newType !== "ELABORADO") {
+      setRecipeItems([]);
+    }
+  };
 
   const createRecipe = (formData: FormData) => {
     formAction(formData);
@@ -218,7 +233,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             <select
               name="type"
               value={productType}
-              onChange={(e) => setProductType(e.target.value)}
+              onChange={(e) => handleTypeChange(e.target.value as ProductType)}
               className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               {PRODUCT_TYPES.map((type) => (
@@ -228,7 +243,27 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               ))}
             </select>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Subcategoría
+            </label>
+            <select
+              name="subCategory"
+              value={subCategory}
+              onChange={(e) => setSubCategory(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {DEFAULT_SUBCATEGORIES[productType].map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        <div className="grid grid-cols-2 gap-4"></div>
 
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -245,7 +280,28 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
           />
         </div>
 
-        {productType === "PIZZA" && (
+        {/* Manual cost input for REVENTA and OTHER */}
+        {productType !== "ELABORADO" && (
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Costo Manual ($)
+            </label>
+            <input
+              name="manualCost"
+              type="number"
+              step="0.01"
+              min="0"
+              className="w-full px-4 py-2 rounded-lg bg-black/10 border border-gray-900/10 text-gray-900 placeholder-gray-800/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="0.00"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Ingrese el costo de compra/adquisición del producto
+            </p>
+          </div>
+        )}
+
+        {/* Recipe section for ELABORADO products */}
+        {productType === "ELABORADO" && (
           <div className="mt-4 p-4 rounded-lg bg-black/5 border border-gray-900/10">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-gray-900">

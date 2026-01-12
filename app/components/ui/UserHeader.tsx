@@ -9,7 +9,7 @@ export async function UserHeader() {
   if (!session?.user) return null;
 
   return (
-    <div className="flex items-center justify-center-safe sm:justify-end gap-6 w-full">
+    <div className="flex items-center gap-6">
       <div className="flex items-center gap-3">
         <div className="flex items-center rounded-full bg-gray-100 p-2">
           <UserIcon size={24} weight="light" />

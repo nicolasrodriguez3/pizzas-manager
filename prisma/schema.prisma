@@ -52,9 +52,11 @@ model Product {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name         String
-  type         String // "PIZZA", "BEVERAGE", "OTHER" - could be an enum but string is flexible for SQLite
+  type         String // "ELABORADO", "REVENTA", "OTHER" - could be an enum but string is flexible for SQLite
   category     String? // e.g., "Clasicas", "Gourmet", "Bebidas Alcoholicas"
+  subCategory  String? // e.g., "Pizzas", "Empanadas", "Bebidas" - subcategory within product type
   basePrice    Float
+  manualCost   Float? // Cost for REVENTA/OTHER products (manual entry, not calculated from recipe)
   isActive     Boolean      @default(true)
   description  String?
   receipeItems RecipeItem[] @relation("ProductRecipe") // Only relevant for complex products like Pizzas

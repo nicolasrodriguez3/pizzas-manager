@@ -33,7 +33,11 @@ export function StatCard({
         </h3>
         {icon && <span className="text-xl opacity-60">{icon}</span>}
       </div>
-      <div className={`text-3xl font-bold ${colorStyles[color]}`}>{value}</div>
+      <div
+        className={`text-3xl md:text-2xl lg:text-3xl font-bold ${colorStyles[color]}`}
+      >
+        {value}
+      </div>
       {subtitle && <p className="text-gray-600 text-xs mt-1">{subtitle}</p>}
     </div>
   );
