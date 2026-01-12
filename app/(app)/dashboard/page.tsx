@@ -10,8 +10,8 @@ export default async function Home() {
   return (
     <div className="min-h-screen p-8 sm:p-12 font-sans bg-linear-to-br from-gray-50 to-white text-black ">
       <main className="max-w-6xl mx-auto space-y-12">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="text-center sm:text-left">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+          <div className="text-center md:text-left">
             <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-br from-orange-400 via-red-500 to-purple-600 mb-4 pb-2">
               Pizza Manager
             </h1>
@@ -20,11 +20,13 @@ export default async function Home() {
               real.
             </p>
           </div>
-          <UserHeader />
+          <div className="flex justify-center md:justify-end gap-6 w-full">
+            <UserHeader />
+          </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6">
           <StatCard
             title="Total de Ventas"
             value={`$${stats.totalRevenue.toFixed(0)}`}
