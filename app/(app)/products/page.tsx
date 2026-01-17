@@ -1,6 +1,17 @@
+import { ProductTableRow } from "@/app/components/ui/ProductTableRow";
 import { getIngredients, getProducts, deleteProduct } from "../../actions";
 import { ProductForm } from "../../components/ProductForm";
-import { Card, PageHeader } from "../../components/ui";
+import { PageHeader } from "../../components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function ProductsPage() {
   const [ingredients, products] = await Promise.all([
@@ -22,89 +33,55 @@ export default async function ProductsPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <Card variant="default">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">
-              Catalogo de Productos
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-white/10 text-gray-700">
-                    <th className="p-3 font-medium">Nombre</th>
-                    <th className="p-3 font-medium">Tipo</th>
-                    <th className="p-3 font-medium text-right">Precio</th>
-                    <th className="p-3 font-medium text-right">Costo</th>
-                    <th className="p-3 font-medium text-right">Beneficio</th>
-                    <th className="p-3 font-medium text-right">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => {
-                    const margin = product.basePrice - product.cost;
-                    const marginPercent =
-                      product.basePrice > 0
-                        ? (margin / product.basePrice) * 100
-                        : 0;
-
-                    return (
-                      <tr
-                        key={product.id}
-                        className="border-b border-white/5 hover:bg-white/5 transition-colors group"
-                      >
-                        <td className="p-3 font-medium text-gray-700">
-                          {product.name}
-                          {product.receipeItems &&
-                            product.receipeItems.length > 0 && (
-                              <span className="ml-2 text-xs text-gray-50 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
-                                {product.receipeItems.length} items
-                              </span>
-                            )}
-                        </td>
-                        <td className="p-3 text-gray-600 text-sm">
-                          {product.type}
-                        </td>
-                        <td className="p-3 text-right text-gray-600">
-                          ${product.basePrice.toFixed(2)}
-                        </td>
-                        <td className="p-3 text-right text-red-400 font-mono">
-                          ${product.cost.toFixed(2)}
-                        </td>
-                        <td className="p-3 text-right font-mono">
-                          <div
-                            className={
-                              margin > 0 ? "text-green-400" : "text-red-500"
-                            }
-                          >
-                            ${margin.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {marginPercent.toFixed(0)}%
-                          </div>
-                        </td>
-                        <td className="p-3 text-right">
-                          <form action={deleteProduct.bind(null, product.id)}>
-                            <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
-                              Borrar
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {products.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={6}
-                        className="p-8 text-center text-gray-500 italic"
-                      >
-                        No se encontraron productos. ¡Crea tu primera Pizza!
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <Card className="rounded-2xl shadow-xl border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                Catalogo de Productos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b border-gray-100 hover:bg-transparent">
+                      <TableHead className="font-medium text-gray-700">
+                        Nombre
+                      </TableHead>
+                      <TableHead className="font-medium text-gray-700">
+                        Tipo
+                      </TableHead>
+                      <TableHead className="font-medium text-right text-gray-700">
+                        Precio de venta
+                      </TableHead>
+                      <TableHead className="font-medium text-right text-gray-700">
+                        Costo
+                      </TableHead>
+                      <TableHead className="font-medium text-right text-gray-700">
+                        Beneficio
+                      </TableHead>
+                      <TableHead className="font-medium text-right text-gray-700">
+                        Acciones
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((product) => (
+                      <ProductTableRow key={product.id} product={product} />
+                    ))}
+                    {products.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="h-24 text-center text-gray-500 italic"
+                        >
+                          No se encontraron productos. ¡Crea tu primera Pizza!
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>

@@ -4,6 +4,9 @@ import { recordSale } from "@/app/actions";
 import { PRODUCT_TYPE_ICONS, ProductType } from "@/app/config/constants";
 import type { ProductWithCost } from "@/app/types";
 import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Minus, Plus, X } from "lucide-react"; // Assuming lucide-react is available via shadcn setup
 
 type POSInterfaceProps = {
   products: ProductWithCost[];
@@ -79,7 +82,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
               onClick={() => addToCart(product)}
               className="group flex flex-col items-center justify-center p-4 rounded-xl bg-white/80 border border-gray-800/10 hover:bg-white hover:border-green-500/50 hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all h-32 relative overflow-hidden"
             >
-              <div className="absolute inset-x-0 bottom-0 h-1 bg-linear-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="text-3xl mb-2">
                 {PRODUCT_TYPE_ICONS[product.type as ProductType] || "📦"}
               </div>
@@ -95,7 +98,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
       </div>
 
       {/* Cart Side Panel */}
-      <div className="md:col-span-1 bg-gray-100/5 backdrop-blur-xl border border-gray-500/10 rounded-2xl flex flex-col shadow-2xl">
+      <Card className="md:col-span-1 border border-gray-500/10 shadow-2xl flex flex-col overflow-hidden h-full bg-gray-100/5 backdrop-blur-xl">
         <div className="p-4 border-b border-gray-500/10 bg-white/50">
           <h2 className="text-xl font-bold text-gray-700">Pedido Actual</h2>
         </div>
@@ -107,9 +110,9 @@ export function POSInterface({ products }: POSInterfaceProps) {
             </div>
           ) : (
             cart.map((item) => (
-              <div
+              <Card
                 key={item.product.id}
-                className="flex justify-between items-center bg-white/50 p-3 rounded-lg border border-white/50"
+                className="flex justify-between items-center p-3 border border-white/50 bg-white/50 shadow-sm"
               >
                 <div>
                   <div className="font-medium text-gray-700">
@@ -119,56 +122,62 @@ export function POSInterface({ products }: POSInterfaceProps) {
                     ${item.product.basePrice.toFixed(2)}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center bg-white/50 rounded-lg">
-                    <button
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center bg-white rounded-lg border border-gray-200">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 rounded-none rounded-l-lg hover:bg-gray-100"
                       onClick={() => updateQuantity(item.product.id, -1)}
-                      className="px-2 py-1 text-gray-400 hover:text-gray-700"
                     >
-                      -
-                    </button>
-                    <span className="text-gray-700 text-sm w-4 text-center">
+                      <Minus size={14} className="text-gray-600" />
+                    </Button>
+                    <span className="text-gray-700 text-sm w-6 text-center font-medium">
                       {item.quantity}
                     </span>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 rounded-none rounded-r-lg hover:bg-gray-100"
                       onClick={() => updateQuantity(item.product.id, 1)}
-                      className="px-2 py-1 text-gray-400 hover:text-gray-700"
                     >
-                      +
-                    </button>
+                      <Plus size={14} className="text-gray-600" />
+                    </Button>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-red-400 hover:text-red-500 hover:bg-red-50"
                     onClick={() => removeFromCart(item.product.id)}
-                    className="text-red-500 hover:text-red-600"
                   >
-                    ×
-                  </button>
+                    <X size={16} />
+                  </Button>
                 </div>
-              </div>
+              </Card>
             ))
           )}
         </div>
 
-        <div className="p-4 border-t border-white/10 bg-white/30 rounded-b-2xl">
+        <div className="p-4 border-t border-white/10 bg-white/30">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-gray-700">Total</span>
-            <span className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-600">
+            <span className="text-gray-700 font-medium">Total</span>
+            <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-700">
               ${total.toFixed(2)}
             </span>
           </div>
-          <button
+          <Button
             onClick={handleCheckout}
             disabled={cart.length === 0 || isPending}
-            className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all ${
+            className={`w-full py-6 text-lg font-bold shadow-lg transition-all ${
               cart.length === 0 || isPending
-                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                : "bg-linear-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 hover:shadow-green-500/20 active:scale-95"
+                ? "bg-gray-400 cursor-not-allowed text-gray-200"
+                : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white hover:shadow-green-500/20 active:scale-95"
             }`}
           >
             {isPending ? "Procesando..." : "Checkout & Pagar"}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
