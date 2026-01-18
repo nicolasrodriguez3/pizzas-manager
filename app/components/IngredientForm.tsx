@@ -154,7 +154,7 @@ export function IngredientForm({ ingredient }: IngredientFormProps) {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-lg text-white"
+            className="w-full bg-linear-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-lg text-white"
           >
             {isPending
               ? "Guardando..."

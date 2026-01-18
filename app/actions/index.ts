@@ -12,7 +12,13 @@ export {
 } from "./ingredients";
 
 // Product actions
-export { getProducts, createProduct, deleteProduct } from "./products";
+export {
+  getProducts,
+  createProduct,
+  deleteProduct,
+  updateProduct,
+  getProductBySlug,
+} from "./products";
 
 // Sales actions
 export { recordSale, getRecentSales } from "./sales";

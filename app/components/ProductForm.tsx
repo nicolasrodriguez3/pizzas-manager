@@ -1,6 +1,6 @@
 "use client";
 
-import { createProduct } from "@/app/actions";
+import { createProduct, updateProduct } from "@/app/actions";
 import {
   PRODUCT_TYPES,
   PRODUCT_TYPE_LABELS,
@@ -14,6 +14,7 @@ import type {
   ActionState,
   RecipeItemInput,
   ProductBase,
+  ProductWithCost, // Assuming this imports Product & relations
 } from "@/app/types";
 import Link from "next/link";
 import { useState, useActionState } from "react";
@@ -35,6 +36,7 @@ import {
 type ProductFormProps = {
   ingredients: Ingredient[];
   products: (ProductBase & { cost: number })[];
+  initialData?: any; // Using any to avoid complex type matching with Prisma result, but ideally should be ProductWithRelations
 };
 
 // Simple client-side unit conversion for preview
@@ -42,7 +44,7 @@ function estimateCost(
   qty: number,
   rUnit: string,
   iUnit: string,
-  iCost: number
+  iCost: number,
 ): number {
   if (Number.isNaN(qty)) return 0;
 
@@ -68,14 +70,39 @@ const initialState: ActionState = {
   message: "",
 };
 
-export function ProductForm({ ingredients, products }: ProductFormProps) {
-  const [state, formAction, isPending] = useActionState(
-    createProduct,
-    initialState
+export function ProductForm({
+  ingredients,
+  products,
+  initialData,
+}: ProductFormProps) {
+  const isEditing = !!initialData;
+
+  // Bind ID if editing
+  const action = isEditing
+    ? updateProduct.bind(null, initialData.id)
+    : createProduct;
+
+  const [state, formAction, isPending] = useActionState(action, initialState);
+
+  const [productType, setProductType] = useState<ProductType>(
+    initialData?.type || "ELABORADO",
   );
-  const [productType, setProductType] = useState<ProductType>("ELABORADO");
-  const [category, setCategory] = useState(DEFAULT_CATEGORIES.ELABORADO[0]);
-  const [recipeItems, setRecipeItems] = useState<RecipeItemInput[]>([]);
+
+  const [category, setCategory] = useState(
+    initialData?.category || DEFAULT_CATEGORIES.ELABORADO[0],
+  );
+
+  // Initialize recipe items
+  const initialRecipeItems: RecipeItemInput[] =
+    initialData?.receipeItems?.map((item: any) => ({
+      ingredientId: item.ingredientId,
+      subProductId: item.subProductId,
+      quantity: item.quantity,
+      unit: item.unit,
+    })) || [];
+
+  const [recipeItems, setRecipeItems] =
+    useState<RecipeItemInput[]>(initialRecipeItems);
   const [clientError, setClientError] = useState<React.ReactNode>("");
 
   // Update category when product type changes
@@ -88,9 +115,10 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
     }
   };
 
-  const createRecipe = (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     formAction(formData);
-    if (state.success) {
+    // Only reset if creating success, not updating
+    if (state.success && !isEditing) {
       setRecipeItems([]);
       setClientError("");
     }
@@ -126,7 +154,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
             Agrega un ingrediente
           </Link>{" "}
           para continuar.
-        </span>
+        </span>,
       );
     }
   };
@@ -140,7 +168,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
   const updateItem = (
     index: number,
     field: "ingredientId" | "quantity" | "unit",
-    value: string | number
+    value: string | number,
   ) => {
     if (value === "") return;
 
@@ -201,11 +229,11 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
     <Card className="rounded-2xl shadow-xl border-gray-900/10">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-xl font-bold text-gray-900">
-          Crear Producto
+          {isEditing ? `Editar ${initialData.name}` : "Crear Producto"}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={createRecipe} className="space-y-4">
+        <form action={handleSubmit} className="space-y-4">
           <div>
             <Label className="mb-2 block" htmlFor="name">
               Nombre del Producto
@@ -217,6 +245,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               required
               className="w-full"
               placeholder="ej. Pizza Muzzarella"
+              defaultValue={initialData?.name}
             />
           </div>
 
@@ -266,6 +295,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               rows={2}
               className="w-full resize-none"
               placeholder="Ingredientes clave, alérgenos, etc."
+              defaultValue={initialData?.description}
             />
           </div>
 
@@ -300,6 +330,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                 type="text"
                 className="w-full"
                 placeholder="e.g., Clásicas"
+                defaultValue={initialData?.subCategory}
               />
             </div>
           </div>
@@ -317,6 +348,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
               required
               className="w-full"
               placeholder="0.00"
+              defaultValue={initialData?.basePrice}
             />
           </div>
 
@@ -334,6 +366,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                 min="0"
                 className="w-full"
                 placeholder="0.00"
+                defaultValue={initialData?.manualCost}
               />
               <p className="text-xs text-gray-500 mt-1">
                 Ingrese el costo de compra/adquisición del producto
@@ -389,11 +422,19 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                         </SelectGroup>
                         <SelectGroup>
                           <SelectLabel>Productos</SelectLabel>
-                          {products.map((prod) => (
-                            <SelectItem key={prod.id} value={`prod_${prod.id}`}>
-                              {prod.name} (Costo: ${prod.cost.toFixed(2)})
-                            </SelectItem>
-                          ))}
+                          {products
+                            // Filter out self if editing
+                            .filter(
+                              (p) => !isEditing || p.id !== initialData.id,
+                            )
+                            .map((prod) => (
+                              <SelectItem
+                                key={prod.id}
+                                value={`prod_${prod.id}`}
+                              >
+                                {prod.name} (Costo: ${prod.cost.toFixed(2)})
+                              </SelectItem>
+                            ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -423,7 +464,7 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
                         updateItem(
                           index,
                           "quantity",
-                          parseFloat(e.target.value)
+                          parseFloat(e.target.value),
                         )
                       }
                       placeholder="Qty"
@@ -476,9 +517,13 @@ export function ProductForm({ ingredients, products }: ProductFormProps) {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold shadow-lg"
+            className="w-full bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold shadow-lg"
           >
-            {isPending ? "Guardando..." : "Crear Producto"}
+            {isPending
+              ? "Guardando..."
+              : isEditing
+                ? "Actualizar Producto"
+                : "Crear Producto"}
           </Button>
         </form>
       </CardContent>

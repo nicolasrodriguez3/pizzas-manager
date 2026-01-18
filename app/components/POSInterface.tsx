@@ -82,7 +82,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
               onClick={() => addToCart(product)}
               className="group flex flex-col items-center justify-center p-4 rounded-xl bg-white/80 border border-gray-800/10 hover:bg-white hover:border-green-500/50 hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all h-32 relative overflow-hidden"
             >
-              <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-x-0 bottom-0 h-1 bg-linear-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="text-3xl mb-2">
                 {PRODUCT_TYPE_ICONS[product.type as ProductType] || "📦"}
               </div>
@@ -161,7 +161,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
         <div className="p-4 border-t border-white/10 bg-white/30">
           <div className="flex justify-between items-center mb-4">
             <span className="text-gray-700 font-medium">Total</span>
-            <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-700">
+            <span className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-green-500 to-emerald-700">
               ${total.toFixed(2)}
             </span>
           </div>
@@ -171,7 +171,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
             className={`w-full py-6 text-lg font-bold shadow-lg transition-all ${
               cart.length === 0 || isPending
                 ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white hover:shadow-green-500/20 active:scale-95"
+                : "bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white hover:shadow-green-500/20 active:scale-95"
             }`}
           >
             {isPending ? "Procesando..." : "Checkout & Pagar"}

@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteProduct } from "@/app/actions";
-import { TrashSimple, DotsThree } from "@phosphor-icons/react";
+import { TrashSimpleIcon, DotsThreeIcon } from "@phosphor-icons/react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,11 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface Props {
   product: {
     id: string;
     name: string;
+    slug: string;
     type: string;
     basePrice: number;
     cost: number;
@@ -23,7 +25,7 @@ interface Props {
 }
 
 export const ProductTableRow = ({ product }: Props) => {
-  const { id, name, type, basePrice, cost, receipeItems } = product;
+  const { id, name, slug, type, basePrice, cost, receipeItems } = product;
 
   const margin = basePrice - cost;
   const marginPercent = basePrice > 0 ? (margin / basePrice) * 100 : 0;
@@ -31,7 +33,9 @@ export const ProductTableRow = ({ product }: Props) => {
   return (
     <TableRow className="hover:bg-gray-50/50">
       <TableCell className="font-medium text-gray-700 flex items-center">
-        {name}
+        <Link href={`/products/${slug}`} className="hover:underline">
+          {name}
+        </Link>
         {receipeItems && receipeItems.length > 0 && (
           <span className="ml-2 text-xs text-gray-50 bg-gray-800 px-1 py-0.5 rounded whitespace-nowrap">
             {receipeItems.length} ingr.
@@ -56,7 +60,11 @@ export const ProductTableRow = ({ product }: Props) => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <DotsThree size={24} weight="bold" className="text-gray-400" />
+              <DotsThreeIcon
+                size={24}
+                weight="bold"
+                className="text-gray-400"
+              />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -66,7 +74,7 @@ export const ProductTableRow = ({ product }: Props) => {
                   type="submit"
                   className="w-full flex items-center gap-2 text-red-600 cursor-pointer"
                 >
-                  <TrashSimple size={16} />
+                  <TrashSimpleIcon size={16} />
                   Borrar
                 </button>
               </DropdownMenuItem>

@@ -3,8 +3,10 @@
 import { prisma } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { convertCost } from "./utils/unitConversion";
+import { calculateProductCost } from "../lib/costs";
 import type { ActionState, RecipeItemInput } from "../types";
 import { auth } from "@/app/auth";
+import { redirect } from "next/navigation";
 
 export async function getProducts() {
   const session = await auth();
@@ -31,81 +33,51 @@ export async function getProducts() {
     orderBy: { name: "asc" },
   });
 
-  // Calculate cost recursively
-  async function calculateProductCost(productId: string): Promise<number> {
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: {
-        receipeItems: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
-    });
-
-    if (!product || !product.receipeItems) return 0;
-
-    let totalCost = 0;
-    for (const item of product.receipeItems) {
-      if (item.ingredientId && item.ingredient) {
-        totalCost += convertCost(
-          item.quantity,
-          item.unit,
-          item.ingredient.unit,
-          item.ingredient.cost
-        );
-      } else if (item.subProductId) {
-        const subProductCost = await calculateProductCost(item.subProductId);
-        // For subproducts, we assume 1:1 units if not specified otherwise
-        // We don't have a "unit" for Product yet, but we use the quantity
-        totalCost += item.quantity * subProductCost;
-      }
-    }
-    return totalCost;
-  }
-
-  // Map through products and calculate their costs
-  // Note: To avoid too many DB calls, we could improve this by caching or fetching everything at once
-  // For now, let's do a more efficient version of the initial fetch that includes subproduct info
-
-  // Efficient calculation for the initial list
-  const productsWithCost = products.map((product) => {
-    // For REVENTA and OTHER products, use manualCost
-    if (product.type !== "ELABORADO") {
-      return { ...product, cost: product.manualCost ?? 0 };
-    }
-
-    // For ELABORADO products, calculate from recipe
-    const calculateCost = (prod: typeof product): number => {
-      let cost = 0;
-      if (prod.receipeItems) {
-        prod.receipeItems.forEach((item) => {
-          if (item.ingredientId && item.ingredient) {
-            cost += convertCost(
-              item.quantity,
-              item.unit,
-              item.ingredient.unit,
-              item.ingredient.cost
-            );
-          } else if (item.subProductId && item.subProduct) {
-            // Recurse into subproduct
-            cost +=
-              item.quantity * calculateCost(item.subProduct as typeof prod);
-          }
-        });
-      }
-      return cost;
-    };
-    return { ...product, cost: calculateCost(product) };
-  });
+  // Calculate costs for all products
+  // We use Promise.all to fetch costs in parallel
+  const productsWithCost = await Promise.all(
+    products.map(async (product) => {
+      const cost = await calculateProductCost(product.id);
+      return { ...product, cost };
+    }),
+  );
 
   return productsWithCost;
 }
 
+export async function getProductBySlug(slug: string) {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const product = await prisma.product.findFirst({
+    where: {
+      slug,
+      userId: session.user.id,
+    },
+    include: {
+      receipeItems: {
+        include: {
+          ingredient: true,
+          subProduct: {
+            include: {
+              receipeItems: {
+                include: {
+                  ingredient: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return product;
+}
+
 export async function createProduct(
   prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionState> {
   const session = await auth();
   if (!session?.user?.id) {
@@ -136,6 +108,8 @@ export async function createProduct(
     return { message: "El precio no puede ser negativo" };
   }
 
+  const slug = name.toLowerCase().replace(/\s+/g, "-");
+
   // Check for duplicates
   const existing = await prisma.product.findFirst({
     where: {
@@ -151,6 +125,7 @@ export async function createProduct(
   await prisma.product.create({
     data: {
       name: name.trim(),
+      slug,
       type,
       category: category ? category.trim() : null,
       subCategory: subCategory ? subCategory.trim() : null,
@@ -176,15 +151,123 @@ export async function createProduct(
   return { success: true, message: "Producto creado correctamente" };
 }
 
+export async function updateProduct(
+  id: string,
+  prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { message: "Unauthorized" };
+  }
+  const userId = session.user.id;
+
+  const name = formData.get("name") as string;
+  const type = formData.get("type") as string;
+  const category = formData.get("category") as string | null;
+  const subCategory = formData.get("subCategory") as string | null;
+  const description = formData.get("description") as string | null;
+  const basePrice = parseFloat(formData.get("basePrice") as string);
+
+  // Manual cost is only for REVENTA and OTHER products
+  const manualCostStr = formData.get("manualCost") as string | null;
+  const manualCost = manualCostStr ? parseFloat(manualCostStr) : null;
+
+  // Recipe items are only for ELABORADO products
+  const recipeItemsJson = formData.get("recipeItems") as string;
+  const recipeItems =
+    type === "ELABORADO" && recipeItemsJson ? JSON.parse(recipeItemsJson) : [];
+
+  if (!name || name.trim() === "") {
+    return { message: "El nombre es requerido" };
+  }
+
+  if (basePrice < 0) {
+    return { message: "El precio no puede ser negativo" };
+  }
+
+  const slug = name.toLowerCase().replace(/\s+/g, "-");
+
+  // Check for duplicates (excluding current product)
+  const existing = await prisma.product.findFirst({
+    where: {
+      name: { equals: name.trim() },
+      userId: userId,
+      NOT: {
+        id: id,
+      },
+    },
+  });
+
+  if (existing) {
+    return { message: "Ya existe otro producto con este nombre" };
+  }
+
+  try {
+    // Transaction to update product and replace recipe items
+    await prisma.$transaction(async (tx) => {
+      // 1. Update basic product info
+      await tx.product.update({
+        where: {
+          id,
+          userId: userId,
+        },
+        data: {
+          name: name.trim(),
+          slug,
+          type,
+          category: category ? category.trim() : null,
+          subCategory: subCategory ? subCategory.trim() : null,
+          description: description ? description.trim() : null,
+          basePrice,
+          manualCost: type !== "ELABORADO" ? manualCost : null,
+        },
+      });
+
+      // 2. Handle Recipe Items (Delete all and recreate)
+      // First, delete existing items
+      await tx.recipeItem.deleteMany({
+        where: {
+          productId: id,
+        },
+      });
+
+      // Then create new ones if type is ELABORADO
+      if (type === "ELABORADO" && recipeItems.length > 0) {
+        await tx.recipeItem.createMany({
+          data: recipeItems.map((item: RecipeItemInput) => ({
+            productId: id,
+            ingredientId: item.ingredientId || null,
+            subProductId: item.subProductId || null,
+            quantity: item.quantity,
+            unit: item.unit,
+          })),
+        });
+      }
+    });
+
+    revalidatePath("/products");
+    revalidatePath(`/products/${slug}`);
+  } catch (error) {
+    console.error("Failed to update product:", error);
+    return { message: "Error al actualizar el producto" };
+  }
+
+  redirect(`/products/${slug}`);
+}
+
 export async function deleteProduct(id: string) {
   const session = await auth();
   if (!session?.user?.id) return;
 
   try {
-    await prisma.product.delete({
+    await prisma.product.update({
       where: {
         id,
         userId: session.user.id,
+      },
+      data: {
+        isActive: false,
       },
     });
     revalidatePath("/products");

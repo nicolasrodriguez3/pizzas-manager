@@ -3,6 +3,7 @@
 import { prisma } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { convertCost } from "./utils/unitConversion";
+import { calculateProductCost } from "../lib/costs";
 import { PAGINATION } from "../config/constants";
 import type { SaleItemInput } from "../types";
 import { auth } from "@/app/auth";
@@ -23,6 +24,15 @@ export async function recordSale(items: SaleItemInput[]) {
       receipeItems: {
         include: {
           ingredient: true,
+          subProduct: {
+            include: {
+              receipeItems: {
+                include: {
+                  ingredient: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -36,29 +46,8 @@ export async function recordSale(items: SaleItemInput[]) {
     const product = products.find((p) => p.id === item.productId);
     if (!product) continue; // Should not happen
 
-    let unitCost = 0;
-    if (
-      product.type === "ELABORADO" &&
-      product.receipeItems &&
-      product.receipeItems.length > 0
-    ) {
-      unitCost = product.receipeItems.reduce((acc, recipeItem) => {
-        if (!recipeItem.ingredient) return acc;
-
-        return (
-          acc +
-          convertCost(
-            recipeItem.quantity,
-            recipeItem.unit,
-            recipeItem.ingredient.unit,
-            recipeItem.ingredient.cost
-          )
-        );
-      }, 0);
-    } else {
-      // For REVENTA or OTHER products, use the manual cost
-      unitCost = product.manualCost || 0;
-    }
+    // Calculate unit cost (recursively if needed)
+    const unitCost = await calculateProductCost(product.id);
 
     totalAmount += product.basePrice * item.quantity;
 
