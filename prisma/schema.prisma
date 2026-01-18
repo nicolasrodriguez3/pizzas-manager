@@ -52,6 +52,7 @@ model Product {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name         String
+  slug         String
   type         String // "ELABORADO", "REVENTA", "OTHER" - could be an enum but string is flexible for SQLite
   category     String? // e.g., "Clasicas", "Gourmet", "Bebidas Alcoholicas"
   subCategory  String? // e.g., "Pizzas", "Empanadas", "Bebidas" - subcategory within product type
@@ -70,6 +71,7 @@ model Product {
   updatedAt DateTime @updatedAt
 
   @@index([name])
+  @@index([slug])
   @@index([type])
   @@index([isActive])
   @@index([userId])
