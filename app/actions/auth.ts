@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData
+  formData: FormData,
 ) {
   try {
     await signIn("credentials", formData);
@@ -45,7 +45,7 @@ export type RegisterState = {
 
 export async function register(
   prevState: RegisterState,
-  formData: FormData
+  formData: FormData,
 ): Promise<RegisterState> {
   const validatedFields = RegisterSchema.safeParse({
     name: formData.get("name"),
@@ -74,18 +74,34 @@ export async function register(
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      });
+
+      const orgName = name ? `${name}'s Business` : "My Business";
+
+      await tx.organization.create({
+        data: {
+          name: orgName,
+          members: {
+            create: {
+              userId: user.id,
+              role: "OWNER",
+            },
+          },
+        },
+      });
     });
   } catch (error) {
     return { message: "Database Error: Failed to Create User." };
   }
 
-  // Redirect or SignIn automatically? Let's redirect to login for simplicity
+  // SignIn automatically
   await signIn("credentials", {
     email,
     password,

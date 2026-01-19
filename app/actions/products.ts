@@ -10,10 +10,10 @@ import { redirect } from "next/navigation";
 
 export async function getProducts() {
   const session = await auth();
-  if (!session?.user?.id) return [];
+  if (!session?.user?.organizationId) return [];
 
   const products = await prisma.product.findMany({
-    where: { userId: session.user.id },
+    where: { organizationId: session.user.organizationId },
     include: {
       receipeItems: {
         include: {
@@ -47,12 +47,12 @@ export async function getProducts() {
 
 export async function getProductBySlug(slug: string) {
   const session = await auth();
-  if (!session?.user?.id) return null;
+  if (!session?.user?.organizationId) return null;
 
   const product = await prisma.product.findFirst({
     where: {
       slug,
-      userId: session.user.id,
+      organizationId: session.user.organizationId,
     },
     include: {
       receipeItems: {
@@ -80,9 +80,10 @@ export async function createProduct(
   formData: FormData,
 ): Promise<ActionState> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.organizationId || !session?.user?.id) {
     return { message: "Unauthorized" };
   }
+  const organizationId = session.user.organizationId;
 
   const name = formData.get("name") as string;
   const type = formData.get("type") as string;
@@ -114,7 +115,7 @@ export async function createProduct(
   const existing = await prisma.product.findFirst({
     where: {
       name: { equals: name.trim() },
-      userId: session.user.id,
+      organizationId,
     },
   });
 
@@ -133,6 +134,7 @@ export async function createProduct(
       basePrice,
       manualCost: type !== "ELABORADO" ? manualCost : null,
       userId: session.user.id,
+      organizationId,
       receipeItems:
         type === "ELABORADO"
           ? {
@@ -157,10 +159,10 @@ export async function updateProduct(
   formData: FormData,
 ): Promise<ActionState> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.organizationId) {
     return { message: "Unauthorized" };
   }
-  const userId = session.user.id;
+  const organizationId = session.user.organizationId;
 
   const name = formData.get("name") as string;
   const type = formData.get("type") as string;
@@ -192,7 +194,7 @@ export async function updateProduct(
   const existing = await prisma.product.findFirst({
     where: {
       name: { equals: name.trim() },
-      userId: userId,
+      organizationId,
       NOT: {
         id: id,
       },
@@ -210,7 +212,7 @@ export async function updateProduct(
       await tx.product.update({
         where: {
           id,
-          userId: userId,
+          organizationId,
         },
         data: {
           name: name.trim(),
@@ -258,13 +260,13 @@ export async function updateProduct(
 
 export async function deleteProduct(id: string) {
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.organizationId) return;
 
   try {
-    await prisma.product.update({
+    await prisma.product.updateMany({
       where: {
         id,
-        userId: session.user.id,
+        organizationId: session.user.organizationId,
       },
       data: {
         isActive: false,

@@ -32,7 +32,18 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
-          if (passwordsMatch) return user;
+          if (passwordsMatch) {
+            // Fetch organization
+            const member = await prisma.organizationMember.findFirst({
+              where: { userId: user.id },
+              orderBy: { createdAt: "asc" },
+            });
+
+            return {
+              ...user,
+              organizationId: member?.organizationId,
+            };
+          }
         }
 
         console.log("Invalid credentials");

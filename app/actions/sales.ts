@@ -10,7 +10,7 @@ import { auth } from "@/app/auth";
 
 export async function recordSale(items: SaleItemInput[]) {
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.organizationId || !session?.user?.id) return;
 
   if (items.length === 0) return;
 
@@ -18,7 +18,7 @@ export async function recordSale(items: SaleItemInput[]) {
   const products = await prisma.product.findMany({
     where: {
       id: { in: items.map((i) => i.productId) },
-      userId: session.user.id,
+      organizationId: session.user.organizationId,
     },
     include: {
       receipeItems: {
@@ -63,6 +63,7 @@ export async function recordSale(items: SaleItemInput[]) {
     data: {
       totalAmount,
       userId: session.user.id,
+      organizationId: session.user.organizationId,
       items: {
         create: saleItemsData,
       },
@@ -75,10 +76,10 @@ export async function recordSale(items: SaleItemInput[]) {
 
 export async function getRecentSales() {
   const session = await auth();
-  if (!session?.user?.id) return [];
+  if (!session?.user?.organizationId) return [];
 
   return await prisma.sale.findMany({
-    where: { userId: session.user.id },
+    where: { organizationId: session.user.organizationId },
     take: PAGINATION.recentSalesLimit,
     orderBy: {
       dateTime: "desc",

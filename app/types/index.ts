@@ -16,6 +16,7 @@ export type User = {
   email: string;
   name?: string | null;
   password?: string;
+  organizationId?: string;
   createdAt: Date;
   updatedAt: Date;
 };

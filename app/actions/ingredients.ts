@@ -7,22 +7,23 @@ import { auth } from "@/app/auth";
 
 export async function getIngredients() {
   const session = await auth();
-  if (!session?.user?.id) return [];
+  if (!session?.user?.organizationId) return [];
 
   return await prisma.ingredient.findMany({
-    where: { userId: session.user.id },
+    where: { organizationId: session.user.organizationId },
     orderBy: { name: "asc" },
   });
 }
 
 export async function createIngredient(
   prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionState> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.organizationId || !session?.user?.id) {
     return { message: "Unauthorized" };
   }
+  const organizationId = session.user.organizationId;
 
   const name = formData.get("name") as string;
   const unit = formData.get("unit") as string;
@@ -42,7 +43,7 @@ export async function createIngredient(
   const existing = await prisma.ingredient.findFirst({
     where: {
       name: { equals: name.trim() },
-      userId: session.user.id,
+      organizationId,
     },
   });
 
@@ -58,6 +59,7 @@ export async function createIngredient(
       description: description ? description.trim() : null,
       isActive,
       userId: session.user.id,
+      organizationId,
     },
   });
 
@@ -67,13 +69,13 @@ export async function createIngredient(
 
 export async function deleteIngredient(id: string) {
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.organizationId) return;
 
   try {
-    await prisma.ingredient.delete({
+    await prisma.ingredient.deleteMany({
       where: {
         id,
-        userId: session.user.id,
+        organizationId: session.user.organizationId,
       },
     });
     revalidatePath("/ingredients");
@@ -84,12 +86,13 @@ export async function deleteIngredient(id: string) {
 
 export async function updateIngredient(
   prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionState> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.organizationId) {
     return { message: "Unauthorized" };
   }
+  const organizationId = session.user.organizationId;
 
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
@@ -114,7 +117,7 @@ export async function updateIngredient(
   const existing = await prisma.ingredient.findFirst({
     where: {
       name: { equals: name.trim() },
-      userId: session.user.id,
+      organizationId,
       NOT: { id },
     },
   });
@@ -127,7 +130,7 @@ export async function updateIngredient(
     await prisma.ingredient.update({
       where: {
         id,
-        userId: session.user.id,
+        organizationId,
       },
       data: {
         name: name.trim(),
