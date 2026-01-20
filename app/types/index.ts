@@ -107,3 +107,24 @@ export type SaleItemInput = {
   productId: string;
   quantity: number;
 };
+
+// --- Sales History Types ---
+
+export type SalesHistoryParams = {
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  cursor?: string;
+  limit?: number;
+};
+
+export type SalesHistoryResult = {
+  sales: Sale[];
+  hasMore: boolean;
+  totalCount: number;
+  periodStats: {
+    revenue: number;
+    cost: number;
+    profit: number;
+  };
+};

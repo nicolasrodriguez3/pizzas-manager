@@ -97,7 +97,15 @@ export default async function Home() {
 
         {/* Recent Activity */}
         <Card padding="lg" className="rounded-3xl">
-          <h2 className="text-2xl font-bold mb-6">Ventas Recientes</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Ventas Recientes</h2>
+            <Link
+              href="/sales/history"
+              className="text-sm text-green-600 hover:text-green-700 hover:underline"
+            >
+              Ver historial completo →
+            </Link>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>

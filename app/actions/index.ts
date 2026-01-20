@@ -21,7 +21,7 @@ export {
 } from "./products";
 
 // Sales actions
-export { recordSale, getRecentSales } from "./sales";
+export { recordSale, getRecentSales, getSalesHistory } from "./sales";
 
 // Dashboard actions
 export { getDashboardStats } from "./dashboard";
