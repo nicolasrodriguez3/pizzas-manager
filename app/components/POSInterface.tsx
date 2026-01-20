@@ -6,7 +6,7 @@ import type { ProductWithCost } from "@/app/types";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Minus, Plus, X } from "lucide-react"; // Assuming lucide-react is available via shadcn setup
+import { Minus, Plus, X } from "lucide-react";
 
 type POSInterfaceProps = {
   products: ProductWithCost[];
@@ -28,7 +28,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
         return prev.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
       return [...prev, { product, quantity: 1 }];
@@ -47,7 +47,16 @@ export function POSInterface({ products }: POSInterfaceProps) {
           return { ...item, quantity: newQty };
         }
         return item;
-      })
+      }),
+    );
+  };
+
+  const setQuantity = (productId: string, quantity: number) => {
+    const newQty = Math.max(1, Math.floor(quantity) || 1);
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product.id === productId ? { ...item, quantity: newQty } : item,
+      ),
     );
   };
 
@@ -67,7 +76,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
 
   const total = cart.reduce(
     (acc, item) => acc + item.quantity * item.product.basePrice,
-    0
+    0,
   );
 
   return (
@@ -103,7 +112,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
           <h2 className="text-xl font-bold text-gray-700">Pedido Actual</h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
           {cart.length === 0 ? (
             <div className="text-gray-400 text-center py-10 italic">
               Carrito vacío
@@ -112,7 +121,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
             cart.map((item) => (
               <Card
                 key={item.product.id}
-                className="flex justify-between items-center p-3 border border-white/50 bg-white/50 shadow-sm"
+                className="flex justify-between items-start py-3 px-4 border border-white/50 bg-white/50 shadow-sm"
               >
                 <div>
                   <div className="font-medium text-gray-700">
@@ -132,9 +141,16 @@ export function POSInterface({ products }: POSInterfaceProps) {
                     >
                       <Minus size={14} className="text-gray-600" />
                     </Button>
-                    <span className="text-gray-700 text-sm w-6 text-center font-medium">
-                      {item.quantity}
-                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        setQuantity(item.product.id, parseInt(e.target.value))
+                      }
+                      onFocus={(e) => e.target.select()}
+                      className="w-10 text-center text-sm font-medium text-gray-700 border-0 bg-transparent focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <Button
                       variant="ghost"
                       size="icon"
@@ -156,7 +172,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
               </Card>
             ))
           )}
-        </div>
+        </CardContent>
 
         <div className="p-4 border-t border-white/10 bg-white/30">
           <div className="flex justify-between items-center mb-4">
