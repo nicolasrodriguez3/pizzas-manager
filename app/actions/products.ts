@@ -1,12 +1,11 @@
 "use server";
 
 import { prisma } from "../lib/prisma";
-import { revalidatePath } from "next/cache";
-import { convertCost } from "./utils/unitConversion";
-import { calculateProductCost } from "../lib/costs";
-import type { ActionState, RecipeItemInput } from "../types";
 import { auth } from "@/app/auth";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { calculateProductCost } from "../lib/costs";
+import type { ActionState, RecipeItemInput } from "../types";
 
 export async function getProducts() {
   const session = await auth();
