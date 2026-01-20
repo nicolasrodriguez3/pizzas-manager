@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { auth } from "@/app/auth";
-import { Button } from "./Button";
 import { handleSignOut } from "@/app/actions/auth";
+import { Button } from "./Button";
 import { UserIcon } from "@phosphor-icons/react/ssr";
 
 export async function UserHeader() {
@@ -11,13 +12,15 @@ export async function UserHeader() {
   return (
     <div className="flex items-center gap-6">
       <div className="flex items-center gap-3">
-        <div className="flex items-center rounded-full bg-gray-100 p-2">
-          <UserIcon size={24} weight="light" />
-        </div>
+        <Link href="/account">
+          <div className="flex items-center rounded-full bg-gray-100 p-2">
+            <UserIcon size={24} weight="light" />
+          </div>
+        </Link>
         <div className="flex flex-col items-start text-left">
-          <p className="text-sm font-medium text-gray-800">
+          <Link href="/account" className="text-sm font-medium text-gray-800">
             {session.user.name}
-          </p>
+          </Link>
           <p className="text-xs text-gray-600">{session.user.email}</p>
         </div>
       </div>

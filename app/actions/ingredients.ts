@@ -51,7 +51,7 @@ export async function createIngredient(
     return { message: "Ya existe un ingrediente con este nombre" };
   }
 
-  await prisma.ingredient.create({
+  const newIngredient = await prisma.ingredient.create({
     data: {
       name: name.trim(),
       unit,
@@ -64,7 +64,12 @@ export async function createIngredient(
   });
 
   revalidatePath("/ingredients");
-  return { success: true, message: "Ingrediente creado correctamente" };
+  revalidatePath("/products");
+  return {
+    success: true,
+    message: "Ingrediente creado correctamente",
+    data: newIngredient,
+  };
 }
 
 export async function deleteIngredient(id: string) {

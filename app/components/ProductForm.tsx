@@ -32,6 +32,7 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select";
+import { CreateIngredientDialog } from "./CreateIngredientDialog";
 
 type ProductFormProps = {
   ingredients: Ingredient[];
@@ -105,6 +106,10 @@ export function ProductForm({
     useState<RecipeItemInput[]>(initialRecipeItems);
   const [clientError, setClientError] = useState<React.ReactNode>("");
 
+  // Local state for ingredients so we can add new ones without page refresh
+  const [availableIngredients, setAvailableIngredients] =
+    useState<Ingredient[]>(ingredients);
+
   // Update category when product type changes
   const handleTypeChange = (newType: ProductType) => {
     setProductType(newType);
@@ -125,15 +130,24 @@ export function ProductForm({
   };
 
   const addIngredient = () => {
+    // Better UX: add the first available ingredient or product
+    const usedIds = new Set(
+      recipeItems.map((item) => item.ingredientId || item.subProductId),
+    );
+
+    const unusedIngredients = ingredients.filter((ing) => !usedIds.has(ing.id));
+
+    console.log({ unusedIngredients });
+
     // By default, add an ingredient if available, else a product
-    if (ingredients.length > 0) {
+    if (availableIngredients.length > 0 && unusedIngredients.length > 0) {
       setRecipeItems([
         ...recipeItems,
         {
-          ingredientId: ingredients[0].id,
+          ingredientId: unusedIngredients[0].id,
           subProductId: null,
           quantity: 1,
-          unit: ingredients[0].unit,
+          unit: unusedIngredients[0].unit,
         },
       ]);
     } else if (products.length > 0) {
@@ -149,11 +163,8 @@ export function ProductForm({
     } else {
       setClientError(
         <span>
-          No hay ingredientes ni productos disponibles.{" "}
-          <Link href="/ingredients" className="underline">
-            Agrega un ingrediente
-          </Link>{" "}
-          para continuar.
+          No hay más ingredientes disponibles. Crea uno con el botón "+ Nuevo
+          Ingrediente".
         </span>,
       );
     }
@@ -179,7 +190,7 @@ export function ProductForm({
       const id = value.toString().replace("ing_", "").replace("prod_", "");
 
       if (isIng) {
-        const ing = ingredients.find((i) => i.id === id);
+        const ing = availableIngredients.find((i) => i.id === id);
         if (ing) {
           newItems[index] = {
             ...newItems[index],
@@ -213,7 +224,7 @@ export function ProductForm({
   // Calculate generic cost preview
   const currentCost = recipeItems.reduce((acc, item) => {
     if (item.ingredientId) {
-      const ing = ingredients.find((i) => i.id === item.ingredientId);
+      const ing = availableIngredients.find((i) => i.id === item.ingredientId);
       return (
         acc +
         (ing ? estimateCost(item.quantity, item.unit, ing.unit, ing.cost) : 0)
@@ -414,7 +425,7 @@ export function ProductForm({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Ingredientes</SelectLabel>
-                          {ingredients.map((ing) => (
+                          {availableIngredients.map((ing) => (
                             <SelectItem key={ing.id} value={`ing_${ing.id}`}>
                               {ing.name} (${ing.cost}/{ing.unit})
                             </SelectItem>
@@ -484,14 +495,29 @@ export function ProductForm({
                 ))}
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addIngredient}
-                className="text-purple-600 hover:text-purple-500 gap-1 border-purple-200 hover:bg-purple-50"
-              >
-                + Agregar Ingrediente
-              </Button>
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addIngredient}
+                  className="text-purple-600 hover:text-purple-500 gap-1 border-purple-200 hover:bg-purple-50"
+                >
+                  + Agregar Ingrediente
+                </Button>
+                <CreateIngredientDialog
+                  onSuccess={(newIngredient) => {
+                    setAvailableIngredients((prev) => [...prev, newIngredient]);
+                    setRecipeItems((prev) => [
+                      ...prev,
+                      {
+                        ingredientId: newIngredient.id,
+                        quantity: 1,
+                        unit: newIngredient.unit,
+                      },
+                    ]);
+                  }}
+                />
+              </div>
             </div>
           )}
 
