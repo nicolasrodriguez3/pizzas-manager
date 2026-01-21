@@ -192,6 +192,31 @@ export async function getSalesHistory(
     });
   });
 
+  // --- Calculate Fixed Costs for the period ---
+  let fixedCostsProrated = 0;
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    const monthlyFixedCosts = await prisma.fixedCost.findMany({
+      where: {
+        organizationId: session.user.organizationId,
+        isActive: true,
+      },
+    });
+
+    const totalMonthly = monthlyFixedCosts.reduce(
+      (acc, c) => acc + c.amount,
+      0,
+    );
+    fixedCostsProrated = (totalMonthly / 30) * diffDays;
+  }
+
+  const grossProfit = revenue - cost;
+  const operatingProfit = grossProfit - fixedCostsProrated;
+
   return {
     sales: resultSales,
     hasMore,
@@ -199,7 +224,10 @@ export async function getSalesHistory(
     periodStats: {
       revenue,
       cost,
-      profit: revenue - cost,
+      profit: revenue - cost, // Still variable profit for compatibility
+      fixedCosts: fixedCostsProrated,
+      grossProfit: grossProfit,
+      operatingProfit: operatingProfit,
     },
   };
 }

@@ -57,10 +57,20 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     },
   });
 
+  // Get fixed costs for the current month
+  const fixedCosts = await prisma.fixedCost.findMany({
+    where: {
+      organizationId: session.user.organizationId as string,
+      isActive: true,
+    },
+  });
+  const totalFixedCosts = fixedCosts.reduce((acc, c) => acc + c.amount, 0);
+
   return {
     totalRevenue,
     totalCost,
     totalProfit,
+    totalFixedCosts,
     totalSalesCount,
     recentSales,
   };

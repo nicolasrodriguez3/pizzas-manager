@@ -31,7 +31,7 @@ export const ProductTableRow = ({ product }: Props) => {
   const marginPercent = basePrice > 0 ? (margin / basePrice) * 100 : 0;
 
   return (
-    <TableRow className="hover:bg-gray-50/50">
+    <TableRow className="hover:bg-gray-50 border-b border-gray-100">
       <TableCell className="font-medium text-gray-700 flex items-center">
         <Link href={`/products/${slug}`} className="hover:underline">
           {name}

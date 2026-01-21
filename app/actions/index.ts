@@ -25,3 +25,12 @@ export { recordSale, getRecentSales, getSalesHistory } from "./sales";
 
 // Dashboard actions
 export { getDashboardStats } from "./dashboard";
+
+// Fixed Cost actions
+export {
+  getFixedCosts,
+  createFixedCost,
+  updateFixedCost,
+  deleteFixedCost,
+  getTotalMonthlyFixedCosts,
+} from "./fixedCosts";

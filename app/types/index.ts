@@ -33,6 +33,18 @@ export type Ingredient = {
   updatedAt: Date;
 };
 
+export type FixedCost = {
+  id: string;
+  organizationId: string;
+  name: string;
+  amount: number;
+  category?: string | null;
+  isActive: boolean;
+  description?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type RecipeItem = {
   id: string;
   productId: string;
@@ -90,6 +102,7 @@ export type DashboardStats = {
   totalRevenue: number;
   totalCost: number;
   totalProfit: number;
+  totalFixedCosts?: number;
   totalSalesCount: number;
   recentSales: Sale[];
 };
@@ -126,5 +139,8 @@ export type SalesHistoryResult = {
     revenue: number;
     cost: number;
     profit: number;
+    fixedCosts?: number;
+    grossProfit?: number;
+    operatingProfit?: number;
   };
 };

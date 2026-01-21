@@ -36,6 +36,7 @@ model Organization {
   products    Product[]
   ingredients Ingredient[]
   sales       Sale[]
+  fixedCosts  FixedCost[]
 }
 
 model OrganizationMember {
@@ -174,4 +175,23 @@ model SaleItem {
 
   @@index([saleId])
   @@index([productId])
+}
+
+// Fixed Monthly Costs (e.g. Rent, Salaries, Services)
+model FixedCost {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name        String
+  amount      Float // Monthly amount
+  category    String? // e.g. "Operativo", "Administrativo"
+  isActive    Boolean @default(true)
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([isActive])
 }

@@ -65,7 +65,7 @@ export default async function SalesHistoryPage({ searchParams }: PageProps) {
       />
 
       {/* Period Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <Card className="bg-white border-gray-100 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -103,9 +103,41 @@ export default async function SalesHistoryPage({ searchParams }: PageProps) {
                 <TrendingDown size={20} className="text-red-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Costos</p>
+                <p className="text-sm text-gray-500">C. variables</p>
                 <p className="text-xl font-bold text-red-600">
                   ${periodStats.cost.toFixed(0)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-gray-100 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <TrendingUp size={20} className="text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Margen Bruto</p>
+                <p className="text-xl font-bold text-orange-600">
+                  ${(periodStats.grossProfit || 0).toFixed(0)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-gray-100 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                <TrendingDown size={20} className="text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Costos Fijos</p>
+                <p className="text-xl font-bold text-indigo-600">
+                  ${(periodStats.fixedCosts || 0).toFixed(0)}
                 </p>
               </div>
             </div>
@@ -119,13 +151,11 @@ export default async function SalesHistoryPage({ searchParams }: PageProps) {
                 <TrendingUp size={20} className="text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">
-                  Beneficio ({marginPercent.toFixed(1)}%)
-                </p>
+                <p className="text-sm text-gray-500">Ut. Operativa</p>
                 <p
-                  className={`text-xl font-bold ${periodStats.profit >= 0 ? "text-purple-600" : "text-red-600"}`}
+                  className={`text-xl font-bold ${(periodStats.operatingProfit || 0) >= 0 ? "text-purple-600" : "text-red-600"}`}
                 >
-                  ${periodStats.profit.toFixed(0)}
+                  ${(periodStats.operatingProfit || 0).toFixed(0)}
                 </p>
               </div>
             </div>

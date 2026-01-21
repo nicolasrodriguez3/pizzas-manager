@@ -4,8 +4,11 @@ import Link from "next/link";
 
 export default async function Home() {
   const stats = await getDashboardStats();
+  const grossProfit = stats.totalProfit; // Total sales - sum of unitCost
+  const operatingProfit = grossProfit - (stats.totalFixedCosts || 0);
+
   const marginPercent =
-    stats.totalRevenue > 0 ? (stats.totalProfit / stats.totalRevenue) * 100 : 0;
+    stats.totalRevenue > 0 ? (grossProfit / stats.totalRevenue) * 100 : 0;
 
   return (
     <div className="min-h-screen p-8 sm:p-12 font-sans bg-linear-to-br from-gray-50 to-white text-black ">
@@ -26,31 +29,36 @@ export default async function Home() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6">
           <StatCard
-            title="Total de Ventas"
+            title="Ventas (Todo)"
             value={`$${stats.totalRevenue.toFixed(0)}`}
             color="green"
           />
           <StatCard
-            title="Total de Costos"
+            title="Costos Var."
             value={`$${stats.totalCost.toFixed(0)}`}
             color="red"
           />
           <StatCard
-            title="Beneficio Neto"
-            value={`$${stats.totalProfit.toFixed(0)}`}
-            color={stats.totalProfit >= 0 ? "green" : "red"}
+            title="Gastos Fijos"
+            value={`$${(stats.totalFixedCosts || 0).toFixed(0)}`}
+            color="blue"
           />
           <StatCard
-            title="Margen"
+            title="Utilidad Op."
+            value={`$${operatingProfit.toFixed(0)}`}
+            color={operatingProfit >= 0 ? "purple" : "red"}
+          />
+          <StatCard
+            title="Margen Bruto"
             value={`${marginPercent.toFixed(1)}%`}
-            color="purple"
+            color="orange"
           />
         </div>
 
         {/* Navigation Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link
             href="/ingredients"
             className="group rounded-2xl border border-gray-500/10 bg-gray-400/5 p-6 backdrop-blur-sm transition-all hover:bg-white/10 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-500/10 flex flex-col items-center text-center"
@@ -78,6 +86,21 @@ export default async function Home() {
             </h2>
             <p className="text-sm text-gray-600">
               Crea recetas y calcula los margenes.
+            </p>
+          </Link>
+
+          <Link
+            href="/expenses"
+            className="group rounded-2xl border border-gray-500/10 bg-gray-400/5 p-6 backdrop-blur-sm transition-all hover:bg-white/10 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 flex flex-col items-center text-center"
+          >
+            <div className="h-14 w-14 rounded-full bg-blue-500/20 flex items-center justify-center mb-4 text-2xl">
+              📉
+            </div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Gastos Fijos
+            </h2>
+            <p className="text-sm text-gray-600">
+              Alquiler, sueldos y servicios.
             </p>
           </Link>
 
