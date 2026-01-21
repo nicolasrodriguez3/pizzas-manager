@@ -18,6 +18,7 @@ export {
   deleteProduct,
   updateProduct,
   getProductBySlug,
+  getProductsForPOS,
 } from "./products";
 
 // Sales actions

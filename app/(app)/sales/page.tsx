@@ -1,5 +1,5 @@
 import { PageHeader } from "@/app/components/ui";
-import { getProducts } from "../../actions";
+import { getProductsForPOS } from "../../actions";
 import { POSInterface } from "../../components/POSInterface";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ const breadcrumbs = [
 ];
 
 export default async function SalesPage() {
-  const products = await getProducts();
+  const products = await getProductsForPOS();
   console.log("products", products);
   return (
     <div className="h-screen flex flex-col p-4 sm:p-6 overflow-hidden bg-linear-to-br from-gray-50 to-white text-black">

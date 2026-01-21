@@ -276,3 +276,21 @@ export async function deleteProduct(id: string) {
     console.error("Failed to delete product:", error);
   }
 }
+
+export async function getProductsForPOS() {
+  const session = await auth();
+  if (!session?.user?.organizationId) return [];
+
+  const products = await prisma.product.findMany({
+    where: {
+      organizationId: session.user.organizationId,
+      isActive: true,
+      basePrice: {
+        gt: 0,
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+
+  return products;
+}

@@ -1,19 +1,19 @@
 "use client";
 
-import { recordSale } from "@/app/actions";
-import { PRODUCT_TYPE_ICONS, ProductType } from "@/app/config/constants";
-import type { ProductWithCost } from "@/app/types";
 import { useState, useTransition } from "react";
+import { PRODUCT_TYPE_ICONS, ProductType } from "@/app/config/constants";
+import type { Product } from "@/app/types";
+import { recordSale } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, X } from "lucide-react";
 
 type POSInterfaceProps = {
-  products: ProductWithCost[];
+  products: Product[];
 };
 
 type CartItem = {
-  product: ProductWithCost;
+  product: Product;
   quantity: number;
 };
 
@@ -21,7 +21,7 @@ export function POSInterface({ products }: POSInterfaceProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isPending, startTransition] = useTransition();
 
-  const addToCart = (product: ProductWithCost) => {
+  const addToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
