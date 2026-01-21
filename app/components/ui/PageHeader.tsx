@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { Breadcrumbs } from "./Breadcrumbs";
 
 type GradientPreset = "orange" | "purple" | "green" | "blue";
 
 interface PageHeaderProps {
-  title: string;
+  title: string | ReactNode;
   subtitle?: string;
   gradient?: GradientPreset;
   backLink?: {
@@ -12,6 +13,7 @@ interface PageHeaderProps {
     label: string;
   };
   actions?: ReactNode;
+  breadcrumbs?: { href: string; label: string }[];
 }
 
 const gradientStyles: Record<GradientPreset, string> = {
@@ -27,27 +29,35 @@ export function PageHeader({
   gradient = "orange",
   backLink,
   actions,
+  breadcrumbs,
 }: PageHeaderProps) {
   return (
-    <header className="flex justify-between items-center mb-12">
-      <div>
-        <h1
-          className={`pb-1 text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r ${gradientStyles[gradient]}`}
-        >
-          {title}
-        </h1>
-        {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
-      </div>
-      <div className="flex items-center gap-4">
-        {actions}
-        {backLink && (
-          <Link
-            href={backLink.href}
-            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition text-sm"
+    <header>
+      {breadcrumbs && (
+        <div className="mb-4">
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+        </div>
+      )}
+      <div className="flex justify-between items-center mb-12">
+        <div>
+          <h1
+            className={`pb-1 text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r ${gradientStyles[gradient]}`}
           >
-            {backLink.label}
-          </Link>
-        )}
+            {title}
+          </h1>
+          {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
+        </div>
+        <div className="flex items-center gap-4">
+          {actions}
+          {backLink && (
+            <Link
+              href={backLink.href}
+              className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition text-sm"
+            >
+              {backLink.label}
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,12 +1,10 @@
 import { ProductTableRow } from "@/app/components/ui/ProductTableRow";
-import { getIngredients, getProducts, deleteProduct } from "../../actions";
-import { ProductForm } from "../../components/ProductForm";
+import { getProducts } from "../../actions";
 import { PageHeader } from "../../components/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,18 +12,21 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 
+const breadcrumbs = [
+  { href: "/dashboard", label: "Inicio" },
+  { href: "/products", label: "Productos" },
+];
+
 export default async function ProductsPage() {
-  const [ingredients, products] = await Promise.all([
-    getIngredients(),
-    getProducts(),
-  ]);
+  const products = await getProducts();
 
   return (
     <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">
       <PageHeader
         title="Productos & Recetas"
         gradient="purple"
-        backLink={{ href: "dashboard/", label: "Volver al Dashboard" }}
+        breadcrumbs={breadcrumbs}
+        backLink={{ href: "/dashboard", label: "Volver al Dashboard" }}
       />
 
       <div className="mb-4">

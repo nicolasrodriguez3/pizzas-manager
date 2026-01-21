@@ -20,11 +20,19 @@ export default async function ProductEditPage({
     notFound();
   }
 
+  const breadcrumbs = [
+    { href: "/dashboard", label: "Inicio" },
+    { href: "/products", label: "Productos" },
+    { href: `/products/${product.slug}`, label: product.name },
+    { href: `/products/${product.slug}/edit`, label: "Editar" },
+  ];
+
   return (
     <div className="min-h-screen p-8 bg-linear-to-br from-gray-50 to-white text-gray-900">
       <PageHeader
-        title={`Editar: ${product.name}`}
+        title={`Editar ${product.name}`}
         gradient="purple"
+        breadcrumbs={breadcrumbs}
         backLink={{
           href: `/products/${product.slug}`,
           label: "Volver al Producto",

@@ -17,6 +17,7 @@ import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { WarningIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageHeader } from "@/app/components/ui";
 
 // Helper to calculate cost recursively
 const calculateCost = (product: any): number => {
@@ -53,6 +54,12 @@ export default async function ProductPage({
     notFound();
   }
 
+  const breadcrumbs = [
+    { href: "/dashboard", label: "Inicio" },
+    { href: "/products", label: "Productos" },
+    { href: `/products/${product.slug}`, label: product.name },
+  ];
+
   const cost = calculateCost(product);
   const benefit = product.basePrice - cost;
   const margin =
@@ -61,65 +68,27 @@ export default async function ProductPage({
   return (
     <div className="min-h-screen p-8 bg-linear-to-br from-gray-50 to-white text-gray-900">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <Link
-              href="/products"
-              className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors mb-2"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver al catálogo
-            </Link>
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 flex items-center gap-3">
-              {product.name}
-              <Badge
-                variant="outline"
-                className={`text-sm px-3 py-1 ${
-                  product.type === "ELABORADO"
-                    ? "bg-purple-50 text-purple-700 border-purple-200"
-                    : "bg-blue-50 text-blue-700 border-blue-200"
-                }`}
+        <PageHeader
+          title={product.name}
+          gradient="purple"
+          breadcrumbs={breadcrumbs}
+          // backLink={{ href: "/products", label: "Volver al catálogo" }}
+          actions={
+            <div className="flex items-center gap-3">
+              <Link href={`/products/${product.slug}/edit`}>
+                <Button variant="default" className="gap-2 cursor-pointer">
+                  <Edit className="w-4 h-4" /> Editar
+                </Button>
+              </Link>
+              <Button
+                variant="destructive"
+                className="cursor-pointer gap-2 border bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
               >
-                {product.type}
-              </Badge>
-            </h1>
-            <div className="flex items-center gap-2 text-gray-500">
-              {product.category && (
-                <Badge
-                  variant="secondary"
-                  className="bg-gray-100 text-gray-700"
-                >
-                  {product.category}
-                </Badge>
-              )}
-              {product.subCategory && (
-                <>
-                  <span className="text-gray-300">•</span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-gray-100 text-gray-700"
-                  >
-                    {product.subCategory}
-                  </Badge>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href={`/products/${product.slug}/edit`}>
-              <Button variant="outline" className="gap-2">
-                <Edit className="w-4 h-4" /> Editar
+                <Trash2 className="w-4 h-4" /> Eliminar
               </Button>
-            </Link>
-            <Button
-              variant="destructive"
-              className="gap-2 border bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-            >
-              <Trash2 className="w-4 h-4" /> Eliminar
-            </Button>
-          </div>
-        </div>
+            </div>
+          }
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Alert si el producto no tiene precio */}
@@ -135,7 +104,38 @@ export default async function ProductPage({
             </Alert>
           )}
           {/* Main Info */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-8">
+            <div className="flex items-center gap-2 text-gray-500">
+              <Badge
+                variant="outline"
+                className={`text-sm px-3 py-1 ${
+                  product.type === "ELABORADO"
+                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                    : "bg-blue-50 text-blue-700 border-blue-200"
+                }`}
+              >
+                {product.type}
+              </Badge>
+              {product.category && (
+                <Badge
+                  variant="secondary"
+                  className="text-sm px-3 py-1 bg-gray-100 text-gray-700"
+                >
+                  {product.category}
+                </Badge>
+              )}
+              {product.subCategory && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <Badge
+                    variant="secondary"
+                    className="text-sm px-3 py-1 bg-gray-100 text-gray-700"
+                  >
+                    {product.subCategory}
+                  </Badge>
+                </>
+              )}
+            </div>
             {product.description && (
               <Card className="border-gray-100 shadow-sm">
                 <CardHeader>

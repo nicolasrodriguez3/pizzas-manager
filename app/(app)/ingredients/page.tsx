@@ -7,6 +7,11 @@ interface PageProps {
   searchParams: Promise<{ edit?: string }>;
 }
 
+const breadcrumbs = [
+  { href: "/dashboard", label: "Inicio" },
+  { href: "/ingredients", label: "Ingredientes" },
+];
+
 export default async function IngredientsPage({ searchParams }: PageProps) {
   const { edit } = await searchParams;
   const ingredients = await getIngredients();
@@ -20,6 +25,7 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
       <PageHeader
         title="Ingredientes"
         gradient="orange"
+        breadcrumbs={breadcrumbs}
         backLink={{ href: "/dashboard", label: "Volver al Dashboard" }}
       />
 

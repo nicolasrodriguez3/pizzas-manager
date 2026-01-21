@@ -6,6 +6,11 @@ interface PageProps {
   searchParams: Promise<{ edit?: string }>;
 }
 
+const breadcrumbs = [
+  { href: "/dashboard", label: "Inicio" },
+  { href: "/expenses", label: "Gastos Fijos" },
+];
+
 export default async function ExpensesPage({ searchParams }: PageProps) {
   const { edit } = await searchParams;
   const fixedCosts = await getFixedCosts();
@@ -21,6 +26,7 @@ export default async function ExpensesPage({ searchParams }: PageProps) {
       <PageHeader
         title="Gastos Fijos"
         gradient="blue"
+        breadcrumbs={breadcrumbs}
         backLink={{ href: "/dashboard", label: "Volver al Dashboard" }}
       />
       <div className="mb-4">

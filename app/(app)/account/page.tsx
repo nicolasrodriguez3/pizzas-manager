@@ -3,6 +3,11 @@ import { auth } from "@/app/auth";
 import { PageHeader } from "@/app/components/ui";
 import { AccountView } from "./account-view";
 
+const breadcrumbs = [
+  { href: "/dashboard", label: "Inicio" },
+  { href: "/account", label: "Mi cuenta" },
+];
+
 export default async function AccountPage() {
   const session = await auth();
   if (!session?.user?.organizationId) return null;
@@ -20,6 +25,7 @@ export default async function AccountPage() {
         subtitle="Gestiona tu perfil y configuración de cuenta"
         backLink={{ href: "/dashboard", label: "Volver al Dashboard" }}
         gradient="blue"
+        breadcrumbs={breadcrumbs}
       />
 
       <AccountView
