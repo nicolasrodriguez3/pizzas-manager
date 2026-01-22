@@ -32,11 +32,13 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members     OrganizationMember[]
-  products    Product[]
-  ingredients Ingredient[]
-  sales       Sale[]
-  fixedCosts  FixedCost[]
+  members             OrganizationMember[]
+  products            Product[]
+  ingredients         Ingredient[]
+  sales               Sale[]
+  fixedCosts          FixedCost[]
+  ingredientPurchases IngredientPurchase[]
+  stockMovements      StockMovement[]
 }
 
 model OrganizationMember {
@@ -63,15 +65,18 @@ model Ingredient {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  name        String
-  unit        String // e.g., "kg", "grams", "liters", "units"
-  cost        Float // Cost per unit
-  isActive    Boolean  @default(true)
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  name         String
+  unit         String // e.g., "kg", "grams", "liters", "units"
+  currentStock Float @default(0) // Stock actual
+  minStock     Float? // Stock mínimo para alertas
+  isActive     Boolean  @default(true)
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  recipeItems RecipeItem[]
+  recipeItems    RecipeItem[]
+  purchases      IngredientPurchase[]
+  stockMovements StockMovement[]
 
   @@index([name])
   @@index([isActive])
@@ -194,4 +199,57 @@ model FixedCost {
 
   @@index([organizationId])
   @@index([isActive])
+}
+
+// Ingredient purchases - Track ingredient buying history and costs
+model IngredientPurchase {
+  id             String @id @default(cuid())
+  organizationId String
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  ingredientId   String
+  ingredient     Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  
+  quantity       Float    // Quantity purchased
+  unit           String   // Unit of purchase (may differ from ingredient base unit)
+  unitCost       Float    // Cost per unit
+  purchaseDate   DateTime @default(now())
+  invoiceNumber  String?  // Invoice number
+  supplierName   String?  // Supplier name
+  notes          String?  // Additional notes
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([ingredientId])
+  @@index([purchaseDate])
+}
+
+// Stock movements - Track all stock changes for audit
+model StockMovement {
+  id             String @id @default(cuid())
+  organizationId String
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  ingredientId   String
+  ingredient     Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  
+  type           String   // "COMPRA", "AJUSTE", "RETIRO", "DEVOLUCION"
+  quantity       Float    // Quantity (positive for entry, negative for exit)
+  unit           String   // Unit of the movement
+  reason         String?  // Reason for the movement
+  referenceId    String?  // Reference to purchase, sale, etc.
+  referenceType  String?  // "PURCHASE", "SALE", "ADJUSTMENT"
+  movementDate   DateTime @default(now())
+  notes          String?  // Additional notes
+  
+  createdAt DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([ingredientId])
+  @@index([type])
+  @@index([movementDate])
 }

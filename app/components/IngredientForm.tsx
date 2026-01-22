@@ -34,7 +34,7 @@ export function IngredientForm({ ingredient }: IngredientFormProps) {
 
   const [state, formAction, isPending] = useActionState(
     isEditing ? updateIngredient : createIngredient,
-    initialState
+    initialState,
   );
 
   // Reset form and clear URL when success
@@ -121,23 +121,41 @@ export function IngredientForm({ ingredient }: IngredientFormProps) {
             </div>
 
             <div>
-              <Label className="mb-2 block" htmlFor="cost">
-                Costo por Unidad ($)
+              <Label className="mb-2 block" htmlFor="minStock">
+                Stock Mínimo (Opcional)
               </Label>
               <Input
-                id="cost"
-                name="cost"
+                id="minStock"
+                name="minStock"
                 type="number"
                 step="0.01"
                 min="0"
-                required
                 key={ingredient?.id}
-                defaultValue={ingredient?.cost}
+                defaultValue={ingredient?.minStock || ""}
                 className="w-full"
                 placeholder="0.00"
               />
             </div>
           </div>
+
+          {ingredient && (
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div>
+                <Label className="mb-2 block text-sm text-gray-600">
+                  Stock Actual
+                </Label>
+                <div className="font-semibold">
+                  {ingredient.currentStock} {ingredient.unit}
+                </div>
+              </div>
+              <div>
+                <Label className="mb-2 block text-sm text-gray-600">
+                  Último Costo
+                </Label>
+                <div className="font-semibold">$0.00 (Sin compras)</div>
+              </div>
+            </div>
+          )}
 
           {state?.message && (
             <div
@@ -159,8 +177,8 @@ export function IngredientForm({ ingredient }: IngredientFormProps) {
             {isPending
               ? "Guardando..."
               : isEditing
-              ? "Actualizar Ingrediente"
-              : "Agregar Ingrediente"}
+                ? "Actualizar Ingrediente"
+                : "Agregar Ingrediente"}
           </Button>
         </form>
       </CardContent>

@@ -26,11 +26,58 @@ export type Ingredient = {
   id: string;
   name: string;
   unit: string;
-  cost: number;
+  currentStock: number;
+  minStock?: number | null;
   isActive: boolean;
   description?: string | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+// Nuevo: Compras de ingredientes
+export type IngredientPurchase = {
+  id: string;
+  organizationId: string;
+  ingredientId: string;
+  ingredient?: Ingredient | null;
+  quantity: number;
+  unit: string;
+  unitCost: number;
+  purchaseDate: Date;
+  invoiceNumber?: string | null;
+  supplierName?: string | null;
+  notes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// Nuevo: Movimientos de Stock
+export type StockMovement = {
+  id: string;
+  organizationId: string;
+  ingredientId: string;
+  ingredient?: Ingredient | null;
+  type: string; // "COMPRA", "AJUSTE", "RETIRO", "DEVOLUCION"
+  quantity: number;
+  unit: string;
+  reason?: string | null;
+  referenceId?: string | null;
+  referenceType?: string | null;
+  movementDate: Date;
+  notes?: string | null;
+  createdAt: Date;
+};
+
+// Tipos de movimiento de stock
+export type StockMovementType = "COMPRA" | "AJUSTE" | "RETIRO" | "DEVOLUCION";
+
+// Extend tipos existentes
+export type IngredientWithStock = Ingredient & {
+  lastCost?: number; // Costo basado en última compra
+  lastPurchaseDate?: Date;
+  isLowStock?: boolean; // true si currentStock <= minStock
+  purchases?: IngredientPurchase[];
+  stockMovements?: StockMovement[];
 };
 
 export type FixedCost = {
@@ -119,6 +166,27 @@ export type RecipeItemInput = {
 export type SaleItemInput = {
   productId: string;
   quantity: number;
+};
+
+// Nuevos: Form inputs para compras y stock
+export type IngredientPurchaseInput = {
+  ingredientId: string;
+  quantity: number;
+  unit: string;
+  unitCost: number;
+  invoiceNumber?: string | null;
+  supplierName?: string | null;
+  notes?: string | null;
+  purchaseDate?: string;
+};
+
+export type StockMovementInput = {
+  ingredientId: string;
+  type: StockMovementType;
+  quantity: number;
+  unit: string;
+  reason?: string | null;
+  notes?: string | null;
 };
 
 // --- Sales History Types ---

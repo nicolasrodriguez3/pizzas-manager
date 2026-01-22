@@ -46,6 +46,7 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
                   <tr className="border-b border-white/10 text-gray-700">
                     <th className="p-3 font-medium">Nombre</th>
                     <th className="p-3 font-medium">Unidad</th>
+                    <th className="p-3 font-medium">Stock</th>
                     <th className="p-3 font-medium">Costo/Unidad</th>
                     <th className="p-3 font-medium text-right">Acciones</th>
                   </tr>
@@ -64,8 +65,15 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
                         {ing.name}
                       </td>
                       <td className="p-3 text-gray-900">{ing.unit}</td>
+                      <td className="p-3">
+                        <span
+                          className={`font-mono text-sm ${ing.isLowStock ? "text-red-400" : "text-green-400"}`}
+                        >
+                          {ing.currentStock.toFixed(2)}
+                        </span>
+                      </td>
                       <td className="p-3 text-green-400 font-mono">
-                        ${ing.cost.toFixed(2)}
+                        ${(ing.lastCost || 0).toFixed(2)}
                       </td>
                       <td className="p-3 text-right">
                         <div className="flex justify-end gap-2 items-center">
@@ -75,6 +83,9 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
                           >
                             Editar
                           </Link>
+                          <button className="text-sm px-3 py-1 rounded bg-green-500/10 text-green-600 hover:bg-green-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
+                            Comprar
+                          </button>
                           <form action={deleteIngredient.bind(null, ing.id)}>
                             <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
                               Borrar
