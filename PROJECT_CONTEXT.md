@@ -2,13 +2,13 @@
 
 ## Overview
 
-Costos Manager es una aplicación web pensada para **emprendimientos gastronómicos** (pizzerías, rotiserías, food trucks, pastelerías, etc.) que necesitan **entender de verdad** cuánto les cuesta producir y vender sus productos.
+Costos Manager es una aplicación web pensada para **emprendimientos gastronómicos** (pizzerías, rotiserías, food trucks, pastelerías, etc.) que necesitan entender cuánto les cuesta producir y vender sus productos.
 
-El foco no está en "vender más" sino en:
+El foco está en:
 
 - Calcular costos reales de productos
 - Entender márgenes y ganancias
-- Tomar decisiones basadas en números, no en intuición
+- Tomar decisiones basadas en números.
 
 ---
 
@@ -52,7 +52,7 @@ No sugerir cambios de stack salvo que haya un motivo técnico muy claro.
 
 - El sistema es **multi-tenant** desde el inicio
 - Cada usuario pertenece a un **tenant (negocio/emprendimiento)**
-- **Todos los modelos principales** (products, ingredients, recipes, sales, etc.) deben estar asociados a un `tenantId`
+- **Todos los modelos principales** (products, ingredients, recipes, sales, fixed costs, etc.) deben estar asociados a un `tenantId`
 - Nunca asumir contexto global
 - Siempre filtrar por tenant desde Server Actions
 
@@ -114,6 +114,13 @@ Errores graves:
 
 - Pertenece a un tenant
 - Puede incluir múltiples productos
+- Registra el precio de venta y el costo histórico (snapshot)
+
+### Fixed Cost
+
+- Pertenece a un tenant
+- Gasto recurrente (mensual, etc.)
+- Se usa para calcular la rentabilidad neta del negocio (Ganancia Bruta - Costos Fijos)
 
 ---
 
@@ -158,6 +165,29 @@ Implicancias técnicas:
   - Margen
 
 Nada de métricas confusas o nombres técnicos.
+
+---
+
+## Key Features Status (Implemented)
+
+### Core
+
+- [x] Multi-tenancy (Organization support)
+- [x] User Authentication (NextAuth)
+
+### Inventory & Products
+
+- [x] Product creation (Recipe & Resale)
+- [x] **Product Editing**: Modificación de nombre, precio y receta
+- [x] **Ingredient Editing**: Ajuste de costos y unidades
+- [x] **Product as Ingredient**: Productos compuestos (una pizza puede ser ingrediente de una promo)
+
+### Sales & Finance
+
+- [x] POS (Point of Sale) con carrito
+- [x] **Manual Quantity**: Input manual de cantidades en el POS
+- [x] **Sales History**: Listado histórico con filtros por fecha y producto
+- [x] **Fixed Costs**: Gestión de costos fijos y cálculo de punto de equilibrio/ganancia neta
 
 ---
 

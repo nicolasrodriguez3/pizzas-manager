@@ -3,20 +3,21 @@
 ## 📋 Build & Development Commands
 
 ### Core Commands
+
 ```bash
 # Development
-npm run dev                # Start development server (Next.js 16)
-npm run build             # Production build
-npm start                 # Start production server
+pnpm run dev              # Start development server (Next.js 16)
+pnpm run build            # Production build
+pnpm start                # Start production server
 
 # Code Quality
-npm run lint              # Run ESLint (Core Web Vitals + TypeScript rules)
+pnpm run lint             # Run ESLint (Core Web Vitals + TypeScript rules)
 npx tsc --noEmit         # TypeScript type checking (run before commits)
 
 # Database
-npx prisma generate       # Generate Prisma client
-npx prisma migrate dev    # Run database migrations in development
-npx prisma studio         # Open Prisma Studio for database inspection
+pnpx prisma generate       # Generate Prisma client
+pnpx prisma migrate dev    # Run database migrations in development
+pnpx prisma studio         # Open Prisma Studio for database inspection
 
 # Testing (No test framework currently configured)
 # TODO: Add Jest/Vitest when tests are implemented
@@ -25,18 +26,21 @@ npx prisma studio         # Open Prisma Studio for database inspection
 ## 🏗️ Architecture Principles
 
 ### Multi-Tenancy (Non-Negotiable)
+
 - **ALWAYS** filter by `organizationId` in Server Actions
 - NEVER assume global context or single tenant
-- Every major model (products, ingredients, sales) must be tenant-scoped
+- Every major model (products, ingredients, sales, fixed costs) must be tenant-scoped
 - Server Actions must validate `session?.user?.organizationId` before operations
 
 ### Server-First Architecture
+
 - **Business logic lives in Server Actions**, not components
 - Prisma calls ONLY from Server Actions, never from client
 - Components are primarily for presentation
 - Use Next.js App Router conventions (Server Components by default)
 
 ### Data Flow
+
 ```
 User Input → React Component → Server Action → Prisma → Database
                                     ↓
@@ -46,6 +50,7 @@ User Feedback ← React State ← Validation Result ← Form Data
 ## 🎯 Code Style Guidelines
 
 ### Imports & Dependencies
+
 ```typescript
 // External libraries first (alphabetical)
 import { useState, useEffect } from "react";
@@ -53,15 +58,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 // Internal imports (grouped by type)
-import { auth } from "@/app/auth";                    // App-level
-import { createIngredient } from "@/app/actions";    // Actions
+import { auth } from "@/app/auth"; // App-level
+import { createIngredient } from "@/app/actions"; // Actions
 import { UNITS, UNIT_LABELS } from "@/app/config/constants"; // Config
-import type { Ingredient } from "@/app/types";       // Types
-import { Button } from "@/components/ui/button";      // UI components
-import { prisma } from "@/lib/prisma";               // Lib
+import type { Ingredient } from "@/app/types"; // Types
+import { Button } from "@/components/ui/button"; // UI components
+import { prisma } from "@/lib/prisma"; // Lib
 ```
 
 ### Component Structure
+
 ```typescript
 // File: components/ExampleComponent.tsx
 "use client"; // Only if using hooks/event handlers
@@ -78,13 +84,13 @@ interface ExampleComponentProps {
 export function ExampleComponent({ data, onAction }: ExampleComponentProps) {
   // Hooks at the top
   const [state, setState] = useState<string>("");
-  
+
   // Event handlers
   const handleClick = () => {
     setState("updated");
     onAction?.(state);
   };
-  
+
   // Render JSX
   return (
     <div className="p-4">
@@ -95,6 +101,7 @@ export function ExampleComponent({ data, onAction }: ExampleComponentProps) {
 ```
 
 ### Server Actions Pattern
+
 ```typescript
 // File: actions/example.ts
 "use server";
@@ -141,6 +148,7 @@ export async function createExample(
 ```
 
 ### Types & Interfaces
+
 ```typescript
 // Centralized in types/index.ts
 export type Example = {
@@ -166,6 +174,7 @@ export type ActionState = {
 ```
 
 ### Naming Conventions
+
 - **Components**: PascalCase with descriptive names (`IngredientForm.tsx`)
 - **Functions**: camelCase with verbs (`createIngredient`, `calculateCost`)
 - **Variables**: camelCase, descriptive (`organizationId`, `isActive`)
@@ -173,6 +182,7 @@ export type ActionState = {
 - **Files**: kebab-case for UI components (`breadcrumb.tsx`), PascalCase for main components
 
 ### Error Handling
+
 ```typescript
 // Server Actions
 try {
@@ -203,18 +213,21 @@ const [state, formAction, isPending] = useActionState(
 ## 🎨 UI/UX Guidelines
 
 ### Component Library (shadcn/ui)
+
 - Use existing components from `@/components/ui/`
 - Follow shadcn/ui patterns for composition
 - Consistent spacing: `space-y-4` for form sections
 - Consistent colors: `bg-orange-500` for primary actions
 
 ### Form Patterns
+
 - Use `useActionState` for form state management
 - Loading states: `{isPending ? "Saving..." : "Save"}`
 - Validation feedback with colored borders/messages
 - Reset form on success for create operations
 
 ### Responsive Design
+
 - Mobile-first approach
 - Grid layouts: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
 - Consistent padding: `p-4 sm:p-6`
@@ -223,16 +236,19 @@ const [state, formAction, isPending] = useActionState(
 ## 🚀 Next.js App Router Specifics
 
 ### Server Components (Default)
+
 - Use for data fetching, no client-side JS needed
 - Import Server Actions directly
 - Better for SEO and performance
 
 ### Client Components (Opt-in)
+
 - Add `"use client";` directive
 - Only when using hooks, event handlers, browser APIs
 - Keep client components small and focused
 
 ### File-Based Routing
+
 ```
 app/
 ├── (app)/           # Route groups (no effect on URL)
@@ -264,6 +280,7 @@ app/
 ## 🧪 Testing Guidelines
 
 (TODO: Implement testing framework)
+
 - Use Jest/Vitest for unit tests
 - Testing Library for component tests
 - Prisma test environment for database tests
