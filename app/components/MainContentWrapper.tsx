@@ -16,8 +16,10 @@ export function MainContentWrapper({ children }: MainContentWrapperProps) {
     <div
       className={cn(
         "overflow-y-auto flex-1 flex flex-col transition-all duration-300 ease-in-out",
+        // Add left margin for desktop fixed sidebar
         !isMobile && (isCollapsed ? "ml-16" : "ml-64"),
-        isOpen && "overflow-hidden",
+        // Prevent scrolling when mobile sidebar is open
+        isOpen && isMobile && "overflow-hidden",
       )}
     >
       {children}

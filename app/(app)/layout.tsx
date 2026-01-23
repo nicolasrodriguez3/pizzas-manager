@@ -20,7 +20,7 @@ export default async function AppLayout({
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar user={session?.user} />
       <MainContentWrapper>
-        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm flex items-center justify-between">
+        <header className="hidden sm:flexbg-white border-b border-gray-200 px-6 py-4 shadow-sm items-center justify-between">
           <SidebarTrigger />
         </header>
         <main className="flex-1">{children}</main>

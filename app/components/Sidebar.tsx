@@ -1,17 +1,27 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
+import { LogOutIcon, User, EllipsisIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarToggle } from "./SidebarToggle";
 import { NavItemComponent } from "./NavItem";
-import { navigationItems } from "@/app/lib/navigation";
 import { useIsMobile } from "../hooks/use-mobile";
+import { useBodyScrollLock } from "../hooks/use-body-scroll-lock";
+import { navigationItems } from "@/app/lib/navigation";
 import { useSidebarStore } from "@/app/lib/store/sidebar";
-import Link from "next/link";
-import { UserIcon } from "@phosphor-icons/react";
 import { handleSignOut } from "@/app/actions/auth";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SidebarProps {
   className?: string;
@@ -32,6 +42,9 @@ export function Sidebar({ className, user }: SidebarProps) {
   } = useSidebarStore();
   const isMobile = useIsMobile();
 
+  // Prevent body scrolling when mobile sidebar is open
+  useBodyScrollLock(isMobile && isMobileOpen);
+
   // Reset collapsed state on mobile
   useEffect(() => {
     if (isMobile) {
@@ -41,8 +54,10 @@ export function Sidebar({ className, user }: SidebarProps) {
 
   const sidebarWidth = isCollapsed && !isMobile ? "w-16" : "w-64";
   const sidebarClasses = cn(
-    "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
-    isMobile ? "shadow-lg" : "",
+    "left-0 top-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
+    isMobile
+      ? "fixed h-screen shadow-lg"
+      : "fixed h-screen shadow-lg border-r-2", // Fixed positioning for desktop, full height
     sidebarWidth,
     !isMobileOpen && isMobile && "-translate-x-full",
     className,
@@ -94,13 +109,16 @@ export function Sidebar({ className, user }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-2 border-t border-gray-200">
+        <div className="p-3 py-4 border-t border-gray-200">
           {(!isCollapsed || isMobile) && user ? (
-            <>
-              <div className="flex items-center gap-3 mb-4">
-                <Link href="/account">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/account"
+                  className="text-gray-400 hover:text-gray-600"
+                >
                   <div className="flex items-center rounded-full bg-gray-100 p-2">
-                    <UserIcon size={24} weight="light" />
+                    <User size={24} />
                   </div>
                 </Link>
                 <div className="flex flex-col items-start text-left">
@@ -113,23 +131,41 @@ export function Sidebar({ className, user }: SidebarProps) {
                   <p className="text-xs text-gray-600">{user.email}</p>
                 </div>
               </div>
-
-              <form action={handleSignOut}>
-                <Button
-                  variant="secondary"
-                  className="w-full text-sm py-1 px-3"
-                >
-                  Sign Out
-                </Button>
-              </form>
-            </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <EllipsisIcon size={24} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="border-gray-200">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <form action={handleSignOut}>
+                        <Button
+                          variant="secondary"
+                          className="w-full text-sm py-1 px-3 cursor-pointer hover:bg-gray-100"
+                        >
+                          Cerrar Sesión
+                        </Button>
+                      </form>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             isCollapsed &&
             !isMobile && (
-              <div className="text-center">
-                <Link href="/account">
-                  <div className="flex size-12 justify-center items-center rounded-full bg-gray-100 text-gray-600">
-                    <UserIcon size={24} weight="regular" />
+              <div className="flex justify-center items-center">
+                <Link
+                  href="/account"
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <div className="flex size-12 justify-center items-center rounded-full bg-gray-100">
+                    <User size={24} />
                   </div>
                 </Link>
               </div>
