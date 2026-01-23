@@ -75,7 +75,7 @@ export type StockMovementType = "COMPRA" | "AJUSTE" | "RETIRO" | "DEVOLUCION";
 export type IngredientWithStock = Ingredient & {
   lastCost?: number; // Costo basado en última compra
   lastPurchaseDate?: Date;
-  isLowStock?: boolean; // true si currentStock <= minStock
+  isLowStock?: boolean | null; // true si currentStock <= minStock
   purchases?: IngredientPurchase[];
   stockMovements?: StockMovement[];
 };

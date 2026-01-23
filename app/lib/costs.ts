@@ -15,7 +15,14 @@ export async function calculateProductCost(productId: string): Promise<number> {
     include: {
       receipeItems: {
         include: {
-          ingredient: true,
+          ingredient: {
+            include: {
+              purchases: {
+                orderBy: { purchaseDate: "desc" },
+                take: 1,
+              },
+            },
+          },
           subProduct: true, // We only need the ID to recurse, but including it doesn't hurt
         },
       },
@@ -38,12 +45,13 @@ export async function calculateProductCost(productId: string): Promise<number> {
 
   for (const item of product.receipeItems) {
     if (item.ingredientId && item.ingredient) {
-      // Direct ingredient
+      // Direct ingredient - use last purchase cost or fallback to 0
+      const lastPurchaseCost = item.ingredient.purchases?.[0]?.unitCost || 0;
       totalCost += convertCost(
         item.quantity,
         item.unit,
         item.ingredient.unit,
-        item.ingredient.cost,
+        lastPurchaseCost,
       );
     } else if (item.subProductId) {
       // Sub-product: Valid recursive call

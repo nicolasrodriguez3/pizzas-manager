@@ -3,6 +3,7 @@ import { getProductBySlug } from "@/app/actions";
 import { getIngredients, getProducts } from "@/app/actions";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/app/components/ui";
+import type { IngredientWithStock } from "@/app/types";
 
 export default async function ProductEditPage({
   params,
@@ -10,11 +11,13 @@ export default async function ProductEditPage({
   params: { slug: string };
 }) {
   const { slug } = await params;
-  const [product, ingredients, products] = await Promise.all([
+  const [product, ingredientsRaw, products] = await Promise.all([
     getProductBySlug(slug),
     getIngredients(),
     getProducts(),
   ]);
+
+  const ingredients = ingredientsRaw as IngredientWithStock[];
 
   if (!product) {
     notFound();

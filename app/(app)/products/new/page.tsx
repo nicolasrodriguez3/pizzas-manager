@@ -1,6 +1,7 @@
 import { getIngredients, getProducts } from "@/app/actions";
 import { ProductForm } from "@/app/components/ProductForm";
 import { PageHeader } from "@/app/components/ui";
+import type { IngredientWithStock } from "@/app/types";
 
 const breadcrumbs = [
   { href: "/dashboard", label: "Inicio" },
@@ -9,10 +10,12 @@ const breadcrumbs = [
 ];
 
 export default async function ProductsNewPage() {
-  const [ingredients, products] = await Promise.all([
+  const [ingredientsRaw, products] = await Promise.all([
     getIngredients(),
     getProducts(),
   ]);
+
+  const ingredients = ingredientsRaw as IngredientWithStock[];
 
   return (
     <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">
