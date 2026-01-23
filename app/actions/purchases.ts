@@ -2,7 +2,7 @@
 
 import { prisma } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
-import type { ActionState, IngredientPurchaseInput } from "../types";
+import type { ActionState } from "../types";
 import { auth } from "@/app/auth";
 
 export async function createIngredientPurchase(
@@ -26,6 +26,10 @@ export async function createIngredientPurchase(
 
   if (!ingredientId) {
     return { message: "Debe seleccionar un ingrediente" };
+  }
+
+  if (!unit || !unit.trim()) {
+    return { message: "Debe especificar la unidad de compra" };
   }
 
   if (!quantity || quantity <= 0) {
@@ -70,10 +74,10 @@ export async function createIngredientPurchase(
         type: "COMPRA",
         quantity,
         unit,
-        reason: `Compra ${invoiceNumber ? `Fact: ${invoiceNumber}` : 'sin factura'}`,
+        reason: `Compra ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
         referenceId: purchase.id,
         referenceType: "PURCHASE",
-        notes: `Proveedor: ${supplierName || 'N/A'}`,
+        notes: `Proveedor: ${supplierName || "N/A"}`,
       },
     });
 
@@ -194,8 +198,8 @@ export async function updateIngredientPurchase(
           where: { id: existingMovement.id },
           data: {
             quantity,
-            reason: `Compra (editada) ${invoiceNumber ? `Fact: ${invoiceNumber}` : 'sin factura'}`,
-            notes: `Proveedor: ${supplierName || 'N/A'}`,
+            reason: `Compra (editada) ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
+            notes: `Proveedor: ${supplierName || "N/A"}`,
           },
         });
       }

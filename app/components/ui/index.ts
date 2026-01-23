@@ -5,3 +5,4 @@ export { StatCard } from "./StatCard";
 export { LoginForm, RegisterForm } from "./AuthForms";
 export { UserHeader } from "./UserHeader";
 export { Breadcrumbs } from "./Breadcrumbs";
+export { FormattedDate } from "./FormattedDate";

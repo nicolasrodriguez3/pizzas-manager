@@ -1,5 +1,5 @@
 import { getDashboardStats } from "@/app/actions/dashboard";
-import { Card, StatCard } from "@/app/components/ui";
+import { Card, StatCard, FormattedDate } from "@/app/components/ui";
 import Link from "next/link";
 
 export default async function Home() {
@@ -139,10 +139,7 @@ export default async function Home() {
                 {stats.recentSales.map((sale) => (
                   <tr key={sale.id} className="text-gray-600">
                     <td className="py-4">
-                      {new Date(sale.dateTime).toLocaleString([], {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
+                      <FormattedDate date={sale.dateTime} />
                     </td>
                     <td className="py-4">
                       {sale.items

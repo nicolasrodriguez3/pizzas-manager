@@ -1,5 +1,5 @@
 import { getSalesHistory } from "@/app/actions";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader, FormattedDate } from "@/app/components/ui";
 import { SalesFilters } from "@/app/components/SalesFilters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -211,10 +211,7 @@ export default async function SalesHistoryPage({ searchParams }: PageProps) {
                       className="border-b border-gray-50 hover:bg-gray-50/50"
                     >
                       <TableCell className="font-medium text-gray-900">
-                        {new Date(sale.dateTime).toLocaleString("es-AR", {
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        })}
+                        <FormattedDate date={sale.dateTime} />
                       </TableCell>
                       <TableCell className="text-gray-600 max-w-xs truncate">
                         {sale.items

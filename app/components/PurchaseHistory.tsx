@@ -1,52 +1,23 @@
 "use client";
 
-import { getIngredientPurchases, deleteIngredientPurchase } from "@/app/actions/purchases";
+import { deleteIngredientPurchase } from "@/app/actions/purchases";
 import type { IngredientPurchase } from "@/app/types";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Package, Calendar, DollarSign } from "lucide-react";
+import { FormattedDate } from "./ui/FormattedDate";
 
-export function PurchaseHistory() {
-  const [purchases, setPurchases] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadPurchases();
-  }, []);
-
-  const loadPurchases = async () => {
-    try {
-      const data = await getIngredientPurchases();
-      setPurchases(data);
-    } catch (error) {
-      console.error("Failed to load purchases:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export function PurchaseHistory({
+  purchases,
+}: {
+  purchases: IngredientPurchase[];
+}) {
   const handleDelete = async (id: string) => {
     if (confirm("¿Está seguro de eliminar esta compra?")) {
       await deleteIngredientPurchase(id);
-      await loadPurchases();
     }
   };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('es-AR');
-  };
-
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center">Cargando historial de compras...</div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full">
@@ -79,47 +50,51 @@ export function PurchaseHistory() {
                         {purchase.quantity} {purchase.unit}
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div className="flex items-center gap-2 text-gray-600">
                         <Calendar className="w-4 h-4" />
-                        {formatDate(purchase.purchaseDate)}
+                        <FormattedDate
+                          date={purchase.purchaseDate}
+                          type="date"
+                        />
                       </div>
-                      
+
                       <div className="flex items-center gap-2 text-gray-600">
-                        <DollarSign className="w-4 h-4" />
-                        ${purchase.unitCost.toFixed(2)}/{purchase.unit}
+                        <DollarSign className="w-4 h-4" />$
+                        {purchase.unitCost.toFixed(2)}/{purchase.unit}
                       </div>
-                      
+
                       <div className="text-gray-600">
-                        Total: ${(purchase.quantity * purchase.unitCost).toFixed(2)}
+                        Total: $
+                        {(purchase.quantity * purchase.unitCost).toFixed(2)}
                       </div>
-                      
+
                       {purchase.supplierName && (
                         <div className="text-gray-600">
                           Proveedor: {purchase.supplierName}
                         </div>
                       )}
                     </div>
-                    
+
                     {purchase.invoiceNumber && (
                       <div className="mt-2 text-sm text-gray-500">
                         Factura: {purchase.invoiceNumber}
                       </div>
                     )}
-                    
+
                     {purchase.notes && (
                       <div className="mt-2 text-sm text-gray-500">
                         Notas: {purchase.notes}
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => alert('Función de edición en desarrollo')}
+                      onClick={() => alert("Función de edición en desarrollo")}
                       className="text-orange-600 hover:text-orange-700"
                     >
                       Editar

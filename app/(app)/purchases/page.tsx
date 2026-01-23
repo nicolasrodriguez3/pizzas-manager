@@ -2,10 +2,12 @@ import { PurchaseForm } from "@/app/components/PurchaseForm";
 import { PurchaseHistory } from "@/app/components/PurchaseHistory";
 import { PageHeader } from "@/app/components/ui";
 import { getIngredients } from "@/app/actions/ingredients";
-import type { IngredientWithStock } from "@/app/types";
+import type { IngredientPurchase, IngredientWithStock } from "@/app/types";
+import { getIngredientPurchases } from "@/app/actions/purchases";
 
 export default async function PurchasesPage() {
-  const ingredients = await getIngredients() as IngredientWithStock[];
+  const ingredients = (await getIngredients()) as IngredientWithStock[];
+  const purchases = (await getIngredientPurchases()) as IngredientPurchase[];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,19 +32,24 @@ export default async function PurchasesPage() {
               </h3>
               <div className="space-y-3">
                 {ingredients.slice(0, 5).map((ingredient) => (
-                  <div key={ingredient.id} className="flex justify-between items-center">
+                  <div
+                    key={ingredient.id}
+                    className="flex justify-between items-center"
+                  >
                     <div>
                       <p className="font-medium text-gray-900">
                         {ingredient.name}
                       </p>
-                      <p className="text-sm text-gray-500">
-                        {ingredient.unit}
-                      </p>
+                      <p className="text-sm text-gray-500">{ingredient.unit}</p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-mono text-sm ${
-                        ingredient.isLowStock ? 'text-red-600' : 'text-green-600'
-                      }`}>
+                      <p
+                        className={`font-mono text-sm ${
+                          ingredient.isLowStock
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
                         {ingredient.currentStock.toFixed(2)}
                       </p>
                       {ingredient.isLowStock && (
@@ -66,17 +73,22 @@ export default async function PurchasesPage() {
               </h3>
               <div className="space-y-3">
                 {ingredients
-                  .filter(ing => ing.lastCost && ing.lastCost > 0)
+                  .filter((ing) => ing.lastCost && ing.lastCost > 0)
                   .slice(0, 5)
                   .map((ingredient) => (
-                    <div key={ingredient.id} className="flex justify-between items-center">
+                    <div
+                      key={ingredient.id}
+                      className="flex justify-between items-center"
+                    >
                       <span className="text-gray-900">{ingredient.name}</span>
                       <span className="font-mono text-green-600">
-                        ${(ingredient.lastCost || 0).toFixed(2)}/{ingredient.unit}
+                        ${(ingredient.lastCost || 0).toFixed(2)}/
+                        {ingredient.unit}
                       </span>
                     </div>
                   ))}
-                {ingredients.filter(ing => ing.lastCost && ing.lastCost > 0).length === 0 && (
+                {ingredients.filter((ing) => ing.lastCost && ing.lastCost > 0)
+                  .length === 0 && (
                   <p className="text-sm text-gray-500 text-center">
                     No hay compras registradas
                   </p>
@@ -88,7 +100,7 @@ export default async function PurchasesPage() {
 
         {/* Historial completo de compras */}
         <div className="mt-8">
-          <PurchaseHistory />
+          <PurchaseHistory purchases={purchases} />
         </div>
       </div>
     </div>

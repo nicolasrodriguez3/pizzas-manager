@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createIngredientPurchase, updateIngredientPurchase } from "@/app/actions/purchases";
-import { getIngredients } from "@/app/actions/ingredients";
+import {
+  createIngredientPurchase,
+  updateIngredientPurchase,
+} from "@/app/actions/purchases";
 import { UNITS, UNIT_LABELS } from "@/app/config/constants";
-import type { ActionState, IngredientPurchase, IngredientPurchaseInput, IngredientWithStock } from "@/app/types";
+import type { IngredientPurchase, IngredientWithStock } from "@/app/types";
 import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,18 +28,23 @@ interface PurchaseFormProps {
   onSuccess?: () => void;
 }
 
-export function PurchaseForm({ purchase, ingredients, onClose, onSuccess }: PurchaseFormProps) {
+export function PurchaseForm({
+  purchase,
+  ingredients,
+  onClose,
+  onSuccess,
+}: PurchaseFormProps) {
   const isEditing = !!purchase;
   const [selectedIngredient, setSelectedIngredient] = useState<string>(
-    purchase?.ingredientId || ""
+    purchase?.ingredientId || "",
   );
   const [totalCost, setTotalCost] = useState<number>(
-    (purchase?.quantity || 0) * (purchase?.unitCost || 0)
+    (purchase?.quantity || 0) * (purchase?.unitCost || 0),
   );
 
   const [state, formAction, isPending] = useActionState(
     isEditing ? updateIngredientPurchase : createIngredientPurchase,
-    { message: "" }
+    { message: "" },
   );
 
   // Calculate total when quantity or unitCost changes
@@ -114,12 +121,22 @@ export function PurchaseForm({ purchase, ingredients, onClose, onSuccess }: Purc
                 placeholder="0.00"
                 onChange={(e) => {
                   const quantity = parseFloat(e.target.value) || 0;
-                  const unitCostInput = document.querySelector('input[name="unitCost"]') as HTMLInputElement;
+                  const unitCostInput = document.querySelector(
+                    'input[name="unitCost"]',
+                  ) as HTMLInputElement;
                   const unitCost = parseFloat(unitCostInput?.value || "0");
                   handleCostChange(quantity, unitCost);
                 }}
               />
             </div>
+
+            <input
+              hidden
+              name="unit"
+              defaultValue={
+                ingredients.find((i) => i.id === selectedIngredient)?.unit
+              }
+            />
 
             <div>
               <Label className="mb-2 block" htmlFor="unitCost">
@@ -137,7 +154,9 @@ export function PurchaseForm({ purchase, ingredients, onClose, onSuccess }: Purc
                 placeholder="0.00"
                 onChange={(e) => {
                   const unitCost = parseFloat(e.target.value) || 0;
-                  const quantityInput = document.querySelector('input[name="quantity"]') as HTMLInputElement;
+                  const quantityInput = document.querySelector(
+                    'input[name="quantity"]',
+                  ) as HTMLInputElement;
                   const quantity = parseFloat(quantityInput?.value || "0");
                   handleCostChange(quantity, unitCost);
                 }}
@@ -167,7 +186,13 @@ export function PurchaseForm({ purchase, ingredients, onClose, onSuccess }: Purc
                 id="purchaseDate"
                 name="purchaseDate"
                 type="date"
-                defaultValue={purchase?.purchaseDate ? new Date(purchase.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                defaultValue={
+                  purchase?.purchaseDate
+                    ? new Date(purchase.purchaseDate)
+                        .toISOString()
+                        .split("T")[0]
+                    : new Date().toISOString().split("T")[0]
+                }
                 className="w-full"
               />
             </div>
@@ -236,8 +261,8 @@ export function PurchaseForm({ purchase, ingredients, onClose, onSuccess }: Purc
               {isPending
                 ? "Guardando..."
                 : isEditing
-                ? "Actualizar Compra"
-                : "Registrar Compra"}
+                  ? "Actualizar Compra"
+                  : "Registrar Compra"}
             </Button>
             {onClose && (
               <Button
