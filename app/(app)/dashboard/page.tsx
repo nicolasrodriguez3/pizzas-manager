@@ -1,5 +1,5 @@
 import { getDashboardStats } from "@/app/actions/dashboard";
-import { Card, StatCard, UserHeader } from "@/app/components/ui";
+import { Card, StatCard } from "@/app/components/ui";
 import Link from "next/link";
 
 export default async function Home() {
@@ -22,9 +22,6 @@ export default async function Home() {
               Gestiona tus ingredientes, recetas y ventas de pizzas en tiempo
               real.
             </p>
-          </div>
-          <div className="flex justify-center md:justify-end gap-6 w-full">
-            <UserHeader />
           </div>
         </div>
 

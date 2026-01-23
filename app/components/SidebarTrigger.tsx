@@ -1,0 +1,25 @@
+"use client";
+
+import { ListIcon } from "@phosphor-icons/react";
+import { Button } from "./ui/Button";
+import { useSidebarStore } from "@/app/lib/store/sidebar";
+import { cn } from "@/lib/utils";
+
+interface SidebarTriggerProps {
+  className?: string;
+}
+
+export function SidebarTrigger({ className }: SidebarTriggerProps) {
+  const openSidebar = useSidebarStore((state) => state.openSidebar);
+
+  return (
+    <Button
+      variant="secondary"
+      onClick={openSidebar}
+      className={cn("md:hidden", className)}
+      type="button"
+    >
+      <ListIcon size={24} />
+    </Button>
+  );
+}
