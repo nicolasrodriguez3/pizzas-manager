@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useBodyScrollLock } from "../hooks/use-body-scroll-lock";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface SidebarProps {
   className?: string;
@@ -91,16 +92,18 @@ export function Sidebar({ className, user }: SidebarProps) {
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto overflow-x-hidden">
-          {navigationItems.map((item) => (
-            <NavItemComponent
-              key={item.name}
-              item={item}
-              isCollapsed={isCollapsed}
-              isMobile={isMobile}
-            />
-          ))}
-        </nav>
+        <TooltipProvider>
+          <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto overflow-x-hidden">
+            {navigationItems.map((item) => (
+              <NavItemComponent
+                key={item.name}
+                item={item}
+                isCollapsed={isCollapsed}
+                isMobile={isMobile}
+              />
+            ))}
+          </nav>
+        </TooltipProvider>
 
         {/* Footer */}
         <div className="p-3 py-4 border-t border-gray-200">

@@ -4,6 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import { NavItem } from "@/app/lib/navigation";
 
@@ -39,58 +44,60 @@ export function NavItemComponent({
   return (
     <div className="relative">
       <div className="flex gap-1 items-center">
-        <Link
-          href={item.href}
-          className={cn(
-            "flex grow items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group",
-            isActive
-              ? "bg-orange-50 text-orange-700 border-r-2 border-orange-500"
-              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-            isCollapsed && !isMobile && "justify-center px-1",
-            isMobile && "w-full justify-start",
-          )}
-        >
-          <item.icon
-            className={cn(
-              "w-5 h-5 shrink-0",
-              isCollapsed && !isMobile ? "mr-0" : "mr-3",
-              isActive
-                ? "text-orange-600"
-                : "text-gray-400 group-hover:text-gray-600",
-            )}
-          />
-
-          {(!isCollapsed || isMobile) && (
-            <>
-              <span className="truncate">{item.name}</span>
-
-              {item.badge && (
-                <span className="ml-auto bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">
-                  {item.badge}
-                </span>
+        <Tooltip delayDuration={500} disableHoverableContent>
+          <TooltipTrigger asChild>
+            <Link
+              href={item.href}
+              className={cn(
+                "flex grow items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group",
+                isActive
+                  ? "bg-orange-50 text-orange-700 border-r-2 border-orange-500"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                isCollapsed && !isMobile && "justify-center px-1",
+                isMobile && "w-full justify-start",
               )}
-            </>
-          )}
+            >
+              <item.icon
+                className={cn(
+                  "w-5 h-5 shrink-0",
+                  isCollapsed && !isMobile ? "mr-0" : "mr-3",
+                  isActive
+                    ? "text-orange-600"
+                    : "text-gray-400 group-hover:text-gray-600",
+                )}
+              />
 
-          {/* {isCollapsed && !isMobile && hasSubmenu && (
-          <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap">
-            {item.quickActions?.[0]?.name}
-          </div>
-        ) */}
-
-          {/* Tooltip para collapsed state */}
-          {isCollapsed && !isMobile && (
-            <div className="absolute left-full ml-2 top-0 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap">
-              {item.name}
-              {item.description && (
+              {(!isCollapsed || isMobile) && (
                 <>
-                  <br />
-                  <span className="text-gray-300">{item.description}</span>
+                  <span className="truncate">{item.name}</span>
+
+                  {item.badge && (
+                    <span className="ml-auto bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
                 </>
               )}
-            </div>
+            </Link>
+          </TooltipTrigger>
+          {isCollapsed && !isMobile && (
+            <TooltipContent
+              side="right"
+              className="text-white bg-black"
+              sideOffset={5}
+              arrowPadding={5}
+              hideWhenDetached={true}
+              popoverTargetAction="toggle"
+            >
+              <div>
+                <p className="text-sm font-semibold">{item.name}</p>
+                {item.description && (
+                  <p className="text-xs text-gray-200">{item.description}</p>
+                )}
+              </div>
+            </TooltipContent>
           )}
-        </Link>
+        </Tooltip>
 
         {/* Desktop submenu toggle */}
         {hasSubmenu && !isMobile && !isCollapsed && (
