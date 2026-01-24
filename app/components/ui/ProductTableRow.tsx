@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteProduct } from "@/app/actions";
+import { deleteProduct } from "@/app/actions/products";
 import { TrashSimpleIcon, DotsThreeIcon } from "@phosphor-icons/react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";

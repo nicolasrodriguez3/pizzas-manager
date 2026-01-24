@@ -1,6 +1,6 @@
 "use client";
 
-import { createFixedCost, updateFixedCost } from "@/app/actions";
+import { createFixedCost, updateFixedCost } from "@/app/actions/fixedCosts";
 import type { ActionState, FixedCost } from "@/app/types";
 import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";

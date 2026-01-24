@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -77,11 +77,11 @@ export function AccountView({ user, organization, isOwner }: AccountViewProps) {
     <div className="grid gap-8 md:grid-cols-2">
       {/* Profile Section */}
       <div className="space-y-6">
-        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm">
+        <Card className="border-gray-500/10 shadow-sm">
           <CardHeader>
             <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-2 border-primary/20">
-                <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+              <Avatar className="h-16 w-16">
+                <AvatarFallback className="bg-gray-500/10 text-primary text-xl font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -143,9 +143,9 @@ export function AccountView({ user, organization, isOwner }: AccountViewProps) {
           </form>
         </Card>
 
-        {/* Sign Out Section (Moved here for better mobile flow or standard layout) */}
-        <Card className="border-none shadow-md bg-red-50/50">
-          <CardContent className="pt-6 flex items-center justify-between">
+        {/* Sign Out Section */}
+        <Card className="border-gray-500/10 shadow-sm bg-red-50/50">
+          <CardContent className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-red-900">Cerrar Sesión</h3>
               <p className="text-sm text-red-700/80">
@@ -164,7 +164,7 @@ export function AccountView({ user, organization, isOwner }: AccountViewProps) {
 
       {/* Organization Section */}
       <div className="space-y-6">
-        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm h-full">
+        <Card className="border-gray-500/10 shadow-sm h-full">
           <CardHeader>
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">

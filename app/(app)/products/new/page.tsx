@@ -1,6 +1,7 @@
-import { getIngredients, getProducts } from "@/app/actions";
+import { getProducts } from "@/app/actions/products";
+import { getIngredients } from "@/app/actions/ingredients";
 import { ProductForm } from "@/app/components/ProductForm";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 import type { IngredientWithStock } from "@/app/types";
 
 const breadcrumbs = [

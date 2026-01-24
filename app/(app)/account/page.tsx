@@ -1,6 +1,6 @@
 import { getUserInfo } from "@/app/actions/user";
 import { auth } from "@/app/auth";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 import { AccountView } from "./account-view";
 
 const breadcrumbs = [

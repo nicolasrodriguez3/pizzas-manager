@@ -1,6 +1,6 @@
 "use client";
 
-import { createIngredient, updateIngredient } from "@/app/actions";
+import { createIngredient, updateIngredient } from "@/app/actions/ingredients";
 import { UNITS, UNIT_LABELS } from "@/app/config/constants";
 import type { ActionState, Ingredient } from "@/app/types";
 import { useActionState, useEffect, useRef } from "react";

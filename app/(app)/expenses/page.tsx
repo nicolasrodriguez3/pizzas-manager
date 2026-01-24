@@ -1,6 +1,7 @@
-import { getFixedCosts, deleteFixedCost } from "../../actions";
-import { Card, PageHeader } from "../../components/ui";
 import Link from "next/link";
+import { getFixedCosts, deleteFixedCost } from "@/app/actions/fixedCosts";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface PageProps {
   searchParams: Promise<{ edit?: string }>;
@@ -38,87 +39,91 @@ export default async function ExpensesPage({ searchParams }: PageProps) {
         </Link>
       </div>
       <div className="space-y-6">
-        <Card variant="glass">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Listado de Gastos
-            </h2>
-            <div className="text-right">
-              <p className="text-sm text-gray-500 uppercase tracking-wider">
-                Total Mensual
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                ${totalMonthly.toFixed(2)}
-              </p>
+        <Card className="border-gray-500/10 shadow-sm">
+          <CardHeader>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Listado de Gastos
+              </h2>
+              <div className="text-right">
+                <p className="text-sm text-gray-500 uppercase tracking-wider">
+                  Total Mensual
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  ${totalMonthly.toFixed(2)}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 text-gray-700">
-                  <th className="p-3 font-medium">Concepto</th>
-                  <th className="p-3 font-medium">Categoría</th>
-                  <th className="p-3 font-medium text-right">Monto</th>
-                  <th className="p-3 font-medium text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fixedCosts.map((cost) => (
-                  <tr
-                    key={cost.id}
-                    className={`border-b border-white/5 hover:bg-white/5 transition-colors group ${
-                      editingExpense?.id === cost.id ? "bg-blue-500/10" : ""
-                    }`}
-                  >
-                    <td className="p-3">
-                      <div className="font-medium text-gray-900">
-                        {cost.name}
-                      </div>
-                      {cost.description && (
-                        <div className="text-xs text-gray-500 truncate max-w-[200px]">
-                          {cost.description}
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                        {cost.category || "General"}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right text-blue-600 font-mono font-bold">
-                      ${cost.amount.toFixed(2)}
-                    </td>
-                    <td className="p-3 text-right">
-                      <div className="flex justify-end gap-2 items-center">
-                        <Link
-                          href={`/expenses?edit=${cost.id}`}
-                          className="text-sm px-3 py-1 rounded bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100"
-                        >
-                          Editar
-                        </Link>
-                        <form action={deleteFixedCost.bind(null, cost.id)}>
-                          <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
-                            Borrar
-                          </button>
-                        </form>
-                      </div>
-                    </td>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/10 text-gray-700">
+                    <th className="p-3 font-medium">Concepto</th>
+                    <th className="p-3 font-medium">Categoría</th>
+                    <th className="p-3 font-medium text-right">Monto</th>
+                    <th className="p-3 font-medium text-right">Acciones</th>
                   </tr>
-                ))}
-                {fixedCosts.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="p-8 text-center text-gray-500 italic"
+                </thead>
+                <tbody>
+                  {fixedCosts.map((cost) => (
+                    <tr
+                      key={cost.id}
+                      className={`border-b border-white/5 hover:bg-white/5 transition-colors group ${
+                        editingExpense?.id === cost.id ? "bg-blue-500/10" : ""
+                      }`}
                     >
-                      No hay gastos fijos registrados. Agrega uno para comenzar.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      <td className="p-3">
+                        <div className="font-medium text-gray-900">
+                          {cost.name}
+                        </div>
+                        {cost.description && (
+                          <div className="text-xs text-gray-500 truncate max-w-[200px]">
+                            {cost.description}
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                          {cost.category || "General"}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right text-blue-600 font-mono font-bold">
+                        ${cost.amount.toFixed(2)}
+                      </td>
+                      <td className="p-3 text-right">
+                        <div className="flex justify-end gap-2 items-center">
+                          <Link
+                            href={`/expenses?edit=${cost.id}`}
+                            className="text-sm px-3 py-1 rounded bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100"
+                          >
+                            Editar
+                          </Link>
+                          <form action={deleteFixedCost.bind(null, cost.id)}>
+                            <button className="text-sm px-3 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition opacity-80 group-hover:opacity-100 focus:opacity-100">
+                              Borrar
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {fixedCosts.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="p-8 text-center text-gray-500 italic"
+                      >
+                        No hay gastos fijos registrados. Agrega uno para
+                        comenzar.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
         </Card>
       </div>
     </div>

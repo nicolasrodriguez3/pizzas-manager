@@ -1,5 +1,6 @@
-import { getSalesHistory } from "@/app/actions";
-import { PageHeader, FormattedDate } from "@/app/components/ui";
+import { getSalesHistory } from "@/app/actions/sales";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+import { FormattedDate } from "@/app/components/ui/FormattedDate";
 import { SalesFilters } from "@/app/components/SalesFilters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

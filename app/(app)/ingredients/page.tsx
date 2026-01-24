@@ -1,7 +1,8 @@
-import { getIngredients, deleteIngredient } from "../../actions";
-import { IngredientForm } from "../../components/IngredientForm";
-import { Card, PageHeader } from "../../components/ui";
 import Link from "next/link";
+import { getIngredients, deleteIngredient } from "@/app/actions/ingredients";
+import { IngredientForm } from "@/app/components/IngredientForm";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+import { Card, CardHeader } from "@/components/ui/card";
 
 interface PageProps {
   searchParams: Promise<{ edit?: string }>;
@@ -35,10 +36,12 @@ export default async function IngredientsPage({ searchParams }: PageProps) {
         </div>
 
         <div className="lg:col-span-2">
-          <Card variant="glass">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">
-              Stock & Costos
-            </h2>
+          <Card className="border-gray-500/10 shadow-sm">
+            <CardHeader>
+              <h2 className="text-2xl font-bold mb-6 text-gray-900">
+                Stock & Costos
+              </h2>
+            </CardHeader>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">

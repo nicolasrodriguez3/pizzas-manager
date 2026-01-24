@@ -5,7 +5,6 @@ import {
   createIngredientPurchase,
   updateIngredientPurchase,
 } from "@/app/actions/purchases";
-import { UNITS, UNIT_LABELS } from "@/app/config/constants";
 import type { IngredientPurchase, IngredientWithStock } from "@/app/types";
 import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
@@ -60,7 +59,7 @@ export function PurchaseForm({
   }, [state, onSuccess]);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="border-gray-500/10 shadow-sm w-full max-w-2xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <Package className="w-5 h-5" />

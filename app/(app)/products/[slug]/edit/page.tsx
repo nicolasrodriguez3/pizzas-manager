@@ -1,8 +1,8 @@
 import { ProductForm } from "@/app/components/ProductForm";
-import { getProductBySlug } from "@/app/actions";
-import { getIngredients, getProducts } from "@/app/actions";
+import { getProductBySlug, getProducts } from "@/app/actions/products";
+import { getIngredients } from "@/app/actions/ingredients";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 import type { IngredientWithStock } from "@/app/types";
 
 export default async function ProductEditPage({

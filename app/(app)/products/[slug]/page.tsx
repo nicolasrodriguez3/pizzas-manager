@@ -1,4 +1,4 @@
-import { getProductBySlug } from "@/app/actions";
+import { getProductBySlug } from "@/app/actions/products";
 import { convertCost } from "@/app/actions/utils/unitConversion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,7 @@ import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { WarningIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 
 // Helper to calculate cost recursively
 const calculateCost = (product: any): number => {
@@ -137,7 +137,7 @@ export default async function ProductPage({
               )}
             </div>
             {product.description && (
-              <Card className="border-gray-100 shadow-sm">
+              <Card className="border-gray-500/10 shadow-sm">
                 <CardHeader>
                   <CardTitle>Descripción</CardTitle>
                 </CardHeader>
@@ -152,7 +152,7 @@ export default async function ProductPage({
             {product.type === "ELABORADO" &&
               product.receipeItems &&
               product.receipeItems.length > 0 && (
-                <Card className="border-gray-100 shadow-lg overflow-hidden pt-0">
+                <Card className="border-gray-500/10 shadow-lg overflow-hidden pt-0">
                   <CardHeader className="bg-gray-50/50 border-b border-gray-100 pt-6">
                     <CardTitle className="text-xl">
                       Ficha Técnica (Receta)

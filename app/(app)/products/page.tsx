@@ -1,6 +1,6 @@
 import { ProductTableRow } from "@/app/components/ui/ProductTableRow";
-import { getProducts } from "../../actions";
-import { PageHeader } from "../../components/ui";
+import { getProducts } from "@/app/actions/products";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,

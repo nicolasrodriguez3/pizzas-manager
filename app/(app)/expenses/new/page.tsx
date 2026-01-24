@@ -1,6 +1,6 @@
-import { getFixedCosts } from "@/app/actions";
+import { getFixedCosts } from "@/app/actions/fixedCosts";
 import { FixedCostForm } from "@/app/components/FixedCostForm";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 
 interface PageProps {
   searchParams: Promise<{ edit?: string }>;

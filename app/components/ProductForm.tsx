@@ -1,6 +1,6 @@
 "use client";
 
-import { createProduct, updateProduct } from "@/app/actions";
+import { createProduct, updateProduct } from "@/app/actions/products";
 import {
   PRODUCT_TYPES,
   PRODUCT_TYPE_LABELS,
@@ -10,14 +10,11 @@ import {
   PRODUCT_TYPE_ICONS,
 } from "@/app/config/constants";
 import type {
-  Ingredient,
   IngredientWithStock,
   ActionState,
   RecipeItemInput,
   ProductBase,
-  ProductWithCost, // Assuming this imports Product & relations
 } from "@/app/types";
-import Link from "next/link";
 import { useState, useActionState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -107,7 +104,7 @@ export function ProductForm({
     useState<RecipeItemInput[]>(initialRecipeItems);
   const [clientError, setClientError] = useState<React.ReactNode>("");
 
-// Local state for ingredients so we can add new ones without page refresh
+  // Local state for ingredients so we can add new ones without page refresh
   const [availableIngredients, setAvailableIngredients] =
     useState<IngredientWithStock[]>(ingredients);
 
@@ -228,7 +225,9 @@ export function ProductForm({
       const ing = availableIngredients.find((i) => i.id === item.ingredientId);
       return (
         acc +
-        (ing && ing.lastCost ? estimateCost(item.quantity, item.unit, ing.unit, ing.lastCost) : 0)
+        (ing && ing.lastCost
+          ? estimateCost(item.quantity, item.unit, ing.unit, ing.lastCost)
+          : 0)
       );
     } else if (item.subProductId) {
       const prod = products.find((p) => p.id === item.subProductId);

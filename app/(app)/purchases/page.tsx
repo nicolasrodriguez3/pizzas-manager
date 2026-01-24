@@ -1,9 +1,11 @@
 import { PurchaseForm } from "@/app/components/PurchaseForm";
 import { PurchaseHistory } from "@/app/components/PurchaseHistory";
-import { PageHeader } from "@/app/components/ui";
+import { PageHeader } from "@/app/components/ui/PageHeader";
 import { getIngredients } from "@/app/actions/ingredients";
 import type { IngredientPurchase, IngredientWithStock } from "@/app/types";
 import { getIngredientPurchases } from "@/app/actions/purchases";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Receipt, Blocks } from "lucide-react";
 
 const breadcrumbs = [
   { href: "/dashboard", label: "Dashboard" },
@@ -23,7 +25,7 @@ export default async function PurchasesPage() {
         backLink={{ href: "/dashboard", label: "Volver al Dashboard" }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
         {/* Formulario de compra - 2/3 del ancho */}
         <div className="lg:col-span-2">
           <PurchaseForm ingredients={ingredients} />
@@ -32,11 +34,14 @@ export default async function PurchasesPage() {
         {/* Resumen lateral - 1/3 del ancho */}
         <div className="space-y-6">
           {/* Estadísticas rápidas */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Resumen de Stock
-            </h3>
-            <div className="space-y-3">
+          <Card className="border-gray-500/10 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Blocks className="w-5 h-5" />
+                Resumen de Stock
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {ingredients.slice(0, 5).map((ingredient) => (
                 <div
                   key={ingredient.id}
@@ -69,15 +74,18 @@ export default async function PurchasesPage() {
                   y {ingredients.length - 5} ingredientes más...
                 </p>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Últimos costos */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Últimos Costos
-            </h3>
-            <div className="space-y-3">
+          <Card className="border-gray-500/10 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Receipt className="w-5 h-5" />
+                Últimos Costos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {ingredients
                 .filter((ing) => ing.lastCost && ing.lastCost > 0)
                 .slice(0, 5)
@@ -98,8 +106,8 @@ export default async function PurchasesPage() {
                   No hay compras registradas
                 </p>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

@@ -1,5 +1,7 @@
 import { getDashboardStats } from "@/app/actions/dashboard";
-import { Card, StatCard, FormattedDate } from "@/app/components/ui";
+import { StatCard } from "@/app/components/ui/StatCard";
+import { FormattedDate } from "@/app/components/ui/FormattedDate";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 
 export default async function Home() {
@@ -116,54 +118,58 @@ export default async function Home() {
         </div>
 
         {/* Recent Activity */}
-        <Card padding="lg" className="rounded-3xl">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Ventas Recientes</h2>
-            <Link
-              href="/sales/history"
-              className="text-sm text-green-600 hover:text-green-700 hover:underline"
-            >
-              Ver historial completo →
-            </Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-gray-500/10 text-gray-500 text-sm uppercase tracking-wider">
-                  <th className="pb-4 font-medium">Fecha y Hora</th>
-                  <th className="pb-4 font-medium">Items</th>
-                  <th className="pb-4 font-medium text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-500/10">
-                {stats.recentSales.map((sale) => (
-                  <tr key={sale.id} className="text-gray-600">
-                    <td className="py-4">
-                      <FormattedDate date={sale.dateTime} />
-                    </td>
-                    <td className="py-4">
-                      {sale.items
-                        .map((i) => `${i.quantity}x ${i.product.name}`)
-                        .join(", ")}
-                    </td>
-                    <td className="py-4 text-right font-mono text-green-400">
-                      ${sale.totalAmount.toFixed(2)}
-                    </td>
+        <Card className="border-gray-500/10 shadow-sm">
+          <CardHeader>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Ventas Recientes</h2>
+              <Link
+                href="/sales/history"
+                className="text-sm text-green-600 hover:text-green-700 hover:underline"
+              >
+                Ver historial completo →
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-500/10 text-gray-500 text-sm uppercase tracking-wider">
+                    <th className="pb-4 font-medium">Fecha y Hora</th>
+                    <th className="pb-4 font-medium">Items</th>
+                    <th className="pb-4 font-medium text-right">Total</th>
                   </tr>
-                ))}
-                {stats.recentSales.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="py-8 text-center text-gray-500 italic"
-                    >
-                      No hay ventas registradas.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-500/10">
+                  {stats.recentSales.map((sale) => (
+                    <tr key={sale.id} className="text-gray-600">
+                      <td className="py-4">
+                        <FormattedDate date={sale.dateTime} />
+                      </td>
+                      <td className="py-4">
+                        {sale.items
+                          .map((i) => `${i.quantity}x ${i.product.name}`)
+                          .join(", ")}
+                      </td>
+                      <td className="py-4 text-right font-mono text-green-400">
+                        ${sale.totalAmount.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                  {stats.recentSales.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="py-8 text-center text-gray-500 italic"
+                      >
+                        No hay ventas registradas.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
         </Card>
       </main>
     </div>

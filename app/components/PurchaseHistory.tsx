@@ -20,7 +20,7 @@ export function PurchaseHistory({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="border-gray-500/10 shadow-sm w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Package className="w-5 h-5" />

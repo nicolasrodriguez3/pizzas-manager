@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { PRODUCT_TYPE_ICONS, ProductType } from "@/app/config/constants";
 import type { Product } from "@/app/types";
-import { recordSale } from "@/app/actions";
+import { recordSale } from "@/app/actions/sales";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, X } from "lucide-react";
@@ -121,13 +121,13 @@ export function POSInterface({ products }: POSInterfaceProps) {
             cart.map((item) => (
               <Card
                 key={item.product.id}
-                className="flex justify-between items-start py-3 px-4 border border-white/50 bg-white/50 shadow-sm"
+                className="flex justify-between items-start py-3 px-4 border border-gray-500/10 bg-white shadow-sm"
               >
                 <div>
                   <div className="font-medium text-gray-700">
                     {item.product.name}
                   </div>
-                  <div className="text-xs text-green-400">
+                  <div className="text-sm text-green-400">
                     ${item.product.basePrice.toFixed(2)}
                   </div>
                 </div>
