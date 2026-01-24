@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import { LogOutIcon, User, EllipsisIcon } from "lucide-react";
+import { User, EllipsisIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarToggle } from "./SidebarToggle";
 import { NavItemComponent } from "./NavItem";
 import { useIsMobile } from "../hooks/use-mobile";
-import { useBodyScrollLock } from "../hooks/use-body-scroll-lock";
 import { navigationItems } from "@/app/lib/navigation";
-import { useSidebarStore } from "@/app/lib/store/sidebar";
+import { toggleSidebarCookie } from "@/app/actions/sidebar";
+import { useSidebar } from "@/app/lib/store/sidebar-store";
 import { handleSignOut } from "@/app/actions/auth";
 
 import { Button } from "@/components/ui/button";
@@ -18,10 +17,9 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useBodyScrollLock } from "../hooks/use-body-scroll-lock";
 
 interface SidebarProps {
   className?: string;
@@ -33,33 +31,29 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className, user }: SidebarProps) {
-  const {
-    isOpen: isMobileOpen,
-    isCollapsed,
-    closeSidebar,
-    setCollapsed,
-    toggleCollapse,
-  } = useSidebarStore();
+  const isMobileOpen = useSidebar((state) => state.isOpen);
+  const isCollapsed = useSidebar((state) => state.isCollapsed);
+  const closeSidebar = useSidebar((state) => state.closeSidebar);
+  const toggleCollapseStore = useSidebar((state) => state.toggleCollapse);
+
   const isMobile = useIsMobile();
 
-  // Prevent body scrolling when mobile sidebar is open
   useBodyScrollLock(isMobile && isMobileOpen);
 
-  // Reset collapsed state on mobile
-  useEffect(() => {
-    if (isMobile) {
-      setCollapsed(false);
-    }
-  }, [isMobile, setCollapsed]);
+  const handleToggleCollapse = async () => {
+    toggleCollapseStore();
+    await toggleSidebarCookie(!isCollapsed);
+  };
 
-  const sidebarWidth = isCollapsed && !isMobile ? "w-16" : "w-64";
+  const sidebarWidth = isCollapsed ? "md:w-16" : "md:w-64";
   const sidebarClasses = cn(
-    "left-0 top-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
-    isMobile
-      ? "fixed h-screen shadow-lg"
-      : "fixed h-screen shadow-lg border-r-2", // Fixed positioning for desktop, full height
+    "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
+    // Mobile Styles (max-md target mobile only, independent of isMobile JS state for initial render)
+    "max-md:w-64 max-md:shadow-lg",
+    isMobileOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full",
+    // Desktop Styles
+    "md:translate-x-0",
     sidebarWidth,
-    !isMobileOpen && isMobile && "-translate-x-full",
     className,
   );
 
@@ -91,7 +85,7 @@ export function Sidebar({ className, user }: SidebarProps) {
           <div className="p-2 border-b border-gray-200">
             <SidebarToggle
               isCollapsed={isCollapsed}
-              onToggle={toggleCollapse}
+              onToggle={handleToggleCollapse}
             />
           </div>
         )}

@@ -2,7 +2,7 @@
 
 import { ListIcon } from "@phosphor-icons/react";
 import { Button } from "./ui/Button";
-import { useSidebarStore } from "@/app/lib/store/sidebar";
+import { useSidebar } from "@/app/lib/store/sidebar-store";
 import { cn } from "@/lib/utils";
 
 interface SidebarTriggerProps {
@@ -10,7 +10,7 @@ interface SidebarTriggerProps {
 }
 
 export function SidebarTrigger({ className }: SidebarTriggerProps) {
-  const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const openSidebar = useSidebar((state) => state.openSidebar);
 
   return (
     <Button
