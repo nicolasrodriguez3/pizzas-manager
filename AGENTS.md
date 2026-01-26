@@ -58,8 +58,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 // Internal imports (grouped by type)
-import { auth } from "@/app/auth"; // App-level
-import { createIngredient } from "@/app/actions"; // Actions
+import { auth } from "@/auth"; // App-level
+import { createIngredient } from "@/actions"; // Actions
 import { UNITS, UNIT_LABELS } from "@/app/config/constants"; // Config
 import type { Ingredient } from "@/app/types"; // Types
 import { Button } from "@/components/ui/button"; // UI components
@@ -108,7 +108,7 @@ export function ExampleComponent({ data, onAction }: ExampleComponentProps) {
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/app/auth";
+import { auth } from "@/auth";
 import type { ActionState } from "@/app/types";
 
 export async function createExample(

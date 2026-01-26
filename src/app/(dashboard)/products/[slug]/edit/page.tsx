@@ -1,0 +1,53 @@
+import { ProductForm } from "@/components/ProductForm";
+import { getProductBySlug, getProducts } from "@/actions/products";
+import { getIngredients } from "@/actions/ingredients";
+import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/PageHeader";
+import type { IngredientWithStock } from "@/types";
+
+export default async function ProductEditPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { slug } = await params;
+  const [product, ingredientsRaw, products] = await Promise.all([
+    getProductBySlug(slug),
+    getIngredients(),
+    getProducts(),
+  ]);
+
+  const ingredients = ingredientsRaw as IngredientWithStock[];
+
+  if (!product) {
+    notFound();
+  }
+
+  const breadcrumbs = [
+    { href: "/", label: "Inicio" },
+    { href: "/products", label: "Productos" },
+    { href: `/products/${product.slug}`, label: product.name },
+    { href: `/products/${product.slug}/edit`, label: "Editar" },
+  ];
+
+  return (
+    <div className="min-h-screen p-8 bg-linear-to-br from-gray-50 to-white text-gray-900">
+      <PageHeader
+        title={`Editar ${product.name}`}
+        gradient="purple"
+        breadcrumbs={breadcrumbs}
+        backLink={{
+          href: `/products/${product.slug}`,
+          label: "Volver al Producto",
+        }}
+      />
+      <div className="max-w-4xl mx-auto mt-8">
+        <ProductForm
+          initialData={product}
+          ingredients={ingredients}
+          products={products}
+        />
+      </div>
+    </div>
+  );
+}

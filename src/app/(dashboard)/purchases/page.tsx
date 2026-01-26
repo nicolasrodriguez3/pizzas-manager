@@ -1,0 +1,120 @@
+import { PurchaseForm } from "@/components/PurchaseForm";
+import { PurchaseHistory } from "@/components/PurchaseHistory";
+import { PageHeader } from "@/components/PageHeader";
+import { getIngredients } from "@/actions/ingredients";
+import type { IngredientPurchase, IngredientWithStock } from "@/types";
+import { getIngredientPurchases } from "@/actions/purchases";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Receipt, Blocks } from "lucide-react";
+
+const breadcrumbs = [
+  { href: "/", label: "Dashboard" },
+  { href: "/purchases", label: "Compras" },
+];
+
+export default async function PurchasesPage() {
+  const ingredients = (await getIngredients()) as IngredientWithStock[];
+  const purchases = (await getIngredientPurchases()) as IngredientPurchase[];
+
+  return (
+    <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">
+      <PageHeader
+        title="Compras de Ingredientes"
+        gradient="orange"
+        breadcrumbs={breadcrumbs}
+        backLink={{ href: "/", label: "Volver al Dashboard" }}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
+        {/* Formulario de compra - 2/3 del ancho */}
+        <div className="lg:col-span-2">
+          <PurchaseForm ingredients={ingredients} />
+        </div>
+
+        {/* Resumen lateral - 1/3 del ancho */}
+        <div className="space-y-6">
+          {/* Estadísticas rápidas */}
+          <Card className="border-gray-500/10 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Blocks className="w-5 h-5" />
+                Resumen de Stock
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ingredients.slice(0, 5).map((ingredient) => (
+                <div
+                  key={ingredient.id}
+                  className="flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {ingredient.name}
+                    </p>
+                    <p className="text-sm text-gray-500">{ingredient.unit}</p>
+                  </div>
+                  <div className="text-right">
+                    <p
+                      className={`font-mono text-sm ${
+                        ingredient.isLowStock
+                          ? "text-red-600"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {ingredient.currentStock.toFixed(2)}
+                    </p>
+                    {ingredient.isLowStock && (
+                      <p className="text-xs text-red-500">Bajo</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {ingredients.length > 5 && (
+                <p className="text-sm text-gray-500 text-center pt-2">
+                  y {ingredients.length - 5} ingredientes más...
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Últimos costos */}
+          <Card className="border-gray-500/10 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Receipt className="w-5 h-5" />
+                Últimos Costos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ingredients
+                .filter((ing) => ing.lastCost && ing.lastCost > 0)
+                .slice(0, 5)
+                .map((ingredient) => (
+                  <div
+                    key={ingredient.id}
+                    className="flex justify-between items-center"
+                  >
+                    <span className="text-gray-900">{ingredient.name}</span>
+                    <span className="font-mono text-green-600">
+                      ${(ingredient.lastCost || 0).toFixed(2)}/{ingredient.unit}
+                    </span>
+                  </div>
+                ))}
+              {ingredients.filter((ing) => ing.lastCost && ing.lastCost > 0)
+                .length === 0 && (
+                <p className="text-sm text-gray-500 text-center">
+                  No hay compras registradas
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Historial completo de compras */}
+      <div className="mt-8">
+        <PurchaseHistory purchases={purchases} />
+      </div>
+    </div>
+  );
+}
