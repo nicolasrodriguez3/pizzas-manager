@@ -98,6 +98,7 @@ export async function register(
       });
     });
   } catch (error) {
+    console.error("Failed to create user:", error);
     return { message: "Database Error: Failed to Create User." };
   }
 

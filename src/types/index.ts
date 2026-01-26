@@ -2,6 +2,10 @@
  * Shared TypeScript types for the Pizza Manager application
  */
 import type { ProductType } from "@/config/constants";
+import type {
+  StockMovementType,
+  ReferenceType,
+} from "@/generated/prisma/client";
 
 // --- Action Response Types ---
 
@@ -31,6 +35,7 @@ export type Ingredient = {
   minStock?: number | null;
   isActive: boolean;
   description?: string | null;
+  cost?: number; // Last purchase cost
   createdAt: Date;
   updatedAt: Date;
 };
@@ -58,19 +63,20 @@ export type StockMovement = {
   organizationId: string;
   ingredientId: string;
   ingredient?: Ingredient | null;
-  type: string; // "COMPRA", "AJUSTE", "RETIRO", "DEVOLUCION"
+  type: StockMovementType;
   quantity: number;
   unit: string;
   reason?: string | null;
   referenceId?: string | null;
-  referenceType?: string | null;
+  referenceType?: ReferenceType | null;
   movementDate: Date;
   notes?: string | null;
   createdAt: Date;
 };
 
 // Tipos de movimiento de stock
-export type StockMovementType = "COMPRA" | "AJUSTE" | "RETIRO" | "DEVOLUCION";
+// Re-export or use the one from Prisma
+export type { StockMovementType };
 
 // Extend tipos existentes
 export type IngredientWithStock = Ingredient & {

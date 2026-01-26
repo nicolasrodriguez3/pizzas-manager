@@ -19,15 +19,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 
+import { Ingredient, ProductBase, RecipeItem } from "@/types";
+
+interface CalculableIngredient extends Ingredient {
+  cost: number;
+}
+
+interface CalculableRecipeItem extends Omit<
+  RecipeItem,
+  "ingredient" | "subProduct"
+> {
+  ingredient?: CalculableIngredient | null;
+  subProduct?: CalculableProduct | null;
+}
+
+interface CalculableProduct extends ProductBase {
+  receipeItems?: CalculableRecipeItem[];
+}
+
 // Helper to calculate cost recursively
-const calculateCost = (product: any): number => {
+const calculateCost = (product: CalculableProduct): number => {
   if (product.type !== "ELABORADO") {
     return product.manualCost ?? 0;
   }
 
   let totalCost = 0;
   if (product.receipeItems) {
-    product.receipeItems.forEach((item: any) => {
+    product.receipeItems.forEach((item) => {
       if (item.ingredient) {
         totalCost += convertCost(
           item.quantity,
@@ -60,7 +78,7 @@ export default async function ProductPage({
     { href: `/products/${product.slug}`, label: product.name },
   ];
 
-  const cost = calculateCost(product);
+  const cost = calculateCost(product as unknown as CalculableProduct);
   const benefit = product.basePrice - cost;
   const margin =
     product.basePrice > 0 ? (benefit / product.basePrice) * 100 : 0;
@@ -173,24 +191,31 @@ export default async function ProductPage({
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {product.receipeItems.map((item: any) => {
+                        {(
+                          product.receipeItems as unknown as CalculableRecipeItem[]
+                        ).map((item) => {
                           const isIngredient = !!item.ingredient;
                           const name = isIngredient
-                            ? item.ingredient.name
-                            : item.subProduct.name;
+                            ? item.ingredient?.name
+                            : item.subProduct?.name;
                           const baseCost = isIngredient
-                            ? item.ingredient.cost / 1000 // Displaying mostly per unit? Wait, cost is usually per unit. Let's just show the total calculated cost.
-                            : calculateCost(item.subProduct);
+                            ? item.ingredient?.cost || 0 // Displaying mostly per unit? Wait, cost is usually per unit. Let's just show the total calculated cost.
+                            : calculateCost(
+                                item.subProduct as CalculableProduct,
+                              );
 
                           // For single unit display, it's tricky with units. Let's just show total cost for this line item.
                           const lineCost = isIngredient
                             ? convertCost(
                                 item.quantity,
                                 item.unit,
-                                item.ingredient.unit,
-                                item.ingredient.cost,
+                                item.ingredient?.unit || "",
+                                item.ingredient?.cost || 0,
                               )
-                            : item.quantity * calculateCost(item.subProduct);
+                            : item.quantity *
+                              calculateCost(
+                                item.subProduct as CalculableProduct,
+                              );
 
                           return (
                             <TableRow
@@ -213,7 +238,7 @@ export default async function ProductPage({
                               </TableCell>
                               <TableCell className="text-right text-gray-500 text-sm">
                                 {/* Showing unit cost might be confusing if units differ. Skipping for clarity or just show total */}
-                                -
+                                ${baseCost}
                               </TableCell>
                               <TableCell className="text-right font-medium text-gray-900">
                                 ${lineCost.toFixed(2)}

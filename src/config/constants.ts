@@ -1,11 +1,8 @@
-/**
- * Application-wide constants and configuration
- * Centralized here for easy modification and consistency
- */
+import { ProductType } from "@/generated/prisma/client";
 
 // Product types available in the system
 export const PRODUCT_TYPES = ["ELABORADO", "REVENTA", "OTHER"] as const;
-export type ProductType = (typeof PRODUCT_TYPES)[number];
+export type { ProductType };
 
 // Display labels for product types (Spanish)
 export const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {

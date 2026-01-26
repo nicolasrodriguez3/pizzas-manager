@@ -228,7 +228,7 @@ export default async function SalesHistoryPage({ searchParams }: PageProps) {
                       <TableCell
                         className={`text-right font-mono ${saleProfit >= 0 ? "text-purple-600" : "text-red-600"}`}
                       >
-                        ${saleProfit.toFixed(2)}
+                        ${saleProfit.toFixed(2)} ({marginPercent}%)
                       </TableCell>
                     </TableRow>
                   );

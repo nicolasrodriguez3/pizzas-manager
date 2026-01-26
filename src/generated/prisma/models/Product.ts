@@ -42,7 +42,7 @@ export type ProductMinAggregateOutputType = {
   organizationId: string | null
   name: string | null
   slug: string | null
-  type: string | null
+  type: $Enums.ProductType | null
   category: string | null
   subCategory: string | null
   basePrice: number | null
@@ -59,7 +59,7 @@ export type ProductMaxAggregateOutputType = {
   organizationId: string | null
   name: string | null
   slug: string | null
-  type: string | null
+  type: $Enums.ProductType | null
   category: string | null
   subCategory: string | null
   basePrice: number | null
@@ -243,7 +243,7 @@ export type ProductGroupByOutputType = {
   organizationId: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category: string | null
   subCategory: string | null
   basePrice: number
@@ -283,7 +283,7 @@ export type ProductWhereInput = {
   organizationId?: Prisma.StringNullableFilter<"Product"> | string | null
   name?: Prisma.StringFilter<"Product"> | string
   slug?: Prisma.StringFilter<"Product"> | string
-  type?: Prisma.StringFilter<"Product"> | string
+  type?: Prisma.EnumProductTypeFilter<"Product"> | $Enums.ProductType
   category?: Prisma.StringNullableFilter<"Product"> | string | null
   subCategory?: Prisma.StringNullableFilter<"Product"> | string | null
   basePrice?: Prisma.FloatFilter<"Product"> | number
@@ -330,7 +330,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   organizationId?: Prisma.StringNullableFilter<"Product"> | string | null
   name?: Prisma.StringFilter<"Product"> | string
   slug?: Prisma.StringFilter<"Product"> | string
-  type?: Prisma.StringFilter<"Product"> | string
+  type?: Prisma.EnumProductTypeFilter<"Product"> | $Enums.ProductType
   category?: Prisma.StringNullableFilter<"Product"> | string | null
   subCategory?: Prisma.StringNullableFilter<"Product"> | string | null
   basePrice?: Prisma.FloatFilter<"Product"> | number
@@ -377,7 +377,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   organizationId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Product"> | string
-  type?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  type?: Prisma.EnumProductTypeWithAggregatesFilter<"Product"> | $Enums.ProductType
   category?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   subCategory?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   basePrice?: Prisma.FloatWithAggregatesFilter<"Product"> | number
@@ -392,7 +392,7 @@ export type ProductCreateInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -414,7 +414,7 @@ export type ProductUncheckedCreateInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -432,7 +432,7 @@ export type ProductUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -454,7 +454,7 @@ export type ProductUncheckedUpdateInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -474,7 +474,7 @@ export type ProductCreateManyInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -489,7 +489,7 @@ export type ProductUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -506,7 +506,7 @@ export type ProductUncheckedUpdateManyInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -682,6 +682,10 @@ export type ProductUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
 }
 
+export type EnumProductTypeFieldUpdateOperationsInput = {
+  set?: $Enums.ProductType
+}
+
 export type ProductCreateNestedOneWithoutReceipeItemsInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutReceipeItemsInput, Prisma.ProductUncheckedCreateWithoutReceipeItemsInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutReceipeItemsInput
@@ -730,7 +734,7 @@ export type ProductCreateWithoutUserInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -750,7 +754,7 @@ export type ProductUncheckedCreateWithoutUserInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -799,7 +803,7 @@ export type ProductScalarWhereInput = {
   organizationId?: Prisma.StringNullableFilter<"Product"> | string | null
   name?: Prisma.StringFilter<"Product"> | string
   slug?: Prisma.StringFilter<"Product"> | string
-  type?: Prisma.StringFilter<"Product"> | string
+  type?: Prisma.EnumProductTypeFilter<"Product"> | $Enums.ProductType
   category?: Prisma.StringNullableFilter<"Product"> | string | null
   subCategory?: Prisma.StringNullableFilter<"Product"> | string | null
   basePrice?: Prisma.FloatFilter<"Product"> | number
@@ -814,7 +818,7 @@ export type ProductCreateWithoutOrganizationInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -834,7 +838,7 @@ export type ProductUncheckedCreateWithoutOrganizationInput = {
   userId: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -878,7 +882,7 @@ export type ProductCreateWithoutReceipeItemsInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -899,7 +903,7 @@ export type ProductUncheckedCreateWithoutReceipeItemsInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -921,7 +925,7 @@ export type ProductCreateWithoutUsedInRecipesInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -942,7 +946,7 @@ export type ProductUncheckedCreateWithoutUsedInRecipesInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -975,7 +979,7 @@ export type ProductUpdateWithoutReceipeItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -996,7 +1000,7 @@ export type ProductUncheckedUpdateWithoutReceipeItemsInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1024,7 +1028,7 @@ export type ProductUpdateWithoutUsedInRecipesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1045,7 +1049,7 @@ export type ProductUncheckedUpdateWithoutUsedInRecipesInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1062,7 +1066,7 @@ export type ProductCreateWithoutSaleItemsInput = {
   id?: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -1083,7 +1087,7 @@ export type ProductUncheckedCreateWithoutSaleItemsInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -1116,7 +1120,7 @@ export type ProductUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1137,7 +1141,7 @@ export type ProductUncheckedUpdateWithoutSaleItemsInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1155,7 +1159,7 @@ export type ProductCreateManyUserInput = {
   organizationId?: string | null
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -1170,7 +1174,7 @@ export type ProductUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1190,7 +1194,7 @@ export type ProductUncheckedUpdateWithoutUserInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1209,7 +1213,7 @@ export type ProductUncheckedUpdateManyWithoutUserInput = {
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1225,7 +1229,7 @@ export type ProductCreateManyOrganizationInput = {
   userId: string
   name: string
   slug: string
-  type: string
+  type: $Enums.ProductType
   category?: string | null
   subCategory?: string | null
   basePrice: number
@@ -1240,7 +1244,7 @@ export type ProductUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1260,7 +1264,7 @@ export type ProductUncheckedUpdateWithoutOrganizationInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1279,7 +1283,7 @@ export type ProductUncheckedUpdateManyWithoutOrganizationInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1450,7 +1454,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     organizationId: string | null
     name: string
     slug: string
-    type: string
+    type: $Enums.ProductType
     category: string | null
     subCategory: string | null
     basePrice: number
@@ -1892,7 +1896,7 @@ export interface ProductFieldRefs {
   readonly organizationId: Prisma.FieldRef<"Product", 'String'>
   readonly name: Prisma.FieldRef<"Product", 'String'>
   readonly slug: Prisma.FieldRef<"Product", 'String'>
-  readonly type: Prisma.FieldRef<"Product", 'String'>
+  readonly type: Prisma.FieldRef<"Product", 'ProductType'>
   readonly category: Prisma.FieldRef<"Product", 'String'>
   readonly subCategory: Prisma.FieldRef<"Product", 'String'>
   readonly basePrice: Prisma.FieldRef<"Product", 'Float'>

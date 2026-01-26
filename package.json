@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-
     "db:up": "docker compose -f docker-compose.local.yml up -d",
     "db:down": "docker compose -f docker-compose.local.yml down",
     "db:reset": "prisma migrate reset",
@@ -15,7 +14,6 @@
     "db:deploy": "prisma migrate deploy",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-
     "dev:full": "pnpm db:up && pnpm db:migrate && pnpm dev"
   },
   "dependencies": {
@@ -51,6 +49,7 @@
     "zustand": "^5.0.10"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.13",
     "@tailwindcss/postcss": "^4",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",

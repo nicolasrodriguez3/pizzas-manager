@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import type { RecipeItem } from "@/types";
 
 interface Props {
   product: {
@@ -20,7 +21,7 @@ interface Props {
     type: string;
     basePrice: number;
     cost: number;
-    receipeItems?: any[];
+    receipeItems?: RecipeItem[];
   };
 }
 

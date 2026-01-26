@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { ProductType } from "@/generated/prisma/client";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -52,16 +53,33 @@ export async function getProductBySlug(slug: string) {
     where: {
       slug,
       organizationId: session.user.organizationId,
+      isActive: true,
     },
     include: {
       receipeItems: {
         include: {
-          ingredient: true,
+          ingredient: {
+            include: {
+              purchases: {
+                where: { organizationId: session.user.organizationId },
+                orderBy: { purchaseDate: "desc" },
+                take: 1,
+              },
+            },
+          },
           subProduct: {
             include: {
               receipeItems: {
                 include: {
-                  ingredient: true,
+                  ingredient: {
+                    include: {
+                      purchases: {
+                        where: { organizationId: session.user.organizationId },
+                        orderBy: { purchaseDate: "desc" },
+                        take: 1,
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -71,7 +89,46 @@ export async function getProductBySlug(slug: string) {
     },
   });
 
-  return product;
+  if (!product) return null;
+
+  // Flatten ingredient.purchases[0].unitCost to ingredient.cost for simplicity in the UI
+  const productWithCosts = {
+    ...product,
+    receipeItems: product.receipeItems.map((item) => {
+      if (item.ingredient) {
+        return {
+          ...item,
+          ingredient: {
+            ...item.ingredient,
+            cost: item.ingredient.purchases[0]?.unitCost || 0,
+          },
+        };
+      }
+      if (item.subProduct) {
+        return {
+          ...item,
+          subProduct: {
+            ...item.subProduct,
+            receipeItems: item.subProduct.receipeItems.map((subItem) => {
+              if (subItem.ingredient) {
+                return {
+                  ...subItem,
+                  ingredient: {
+                    ...subItem.ingredient,
+                    cost: subItem.ingredient.purchases[0]?.unitCost || 0,
+                  },
+                };
+              }
+              return subItem;
+            }),
+          },
+        };
+      }
+      return item;
+    }),
+  };
+
+  return productWithCosts;
 }
 
 export async function createProduct(
@@ -85,7 +142,7 @@ export async function createProduct(
   const organizationId = session.user.organizationId;
 
   const name = formData.get("name") as string;
-  const type = formData.get("type") as string;
+  const type = formData.get("type") as ProductType;
   const category = formData.get("category") as string | null;
   const subCategory = formData.get("subCategory") as string | null;
   const description = formData.get("description") as string | null;
@@ -164,7 +221,7 @@ export async function updateProduct(
   const organizationId = session.user.organizationId;
 
   const name = formData.get("name") as string;
-  const type = formData.get("type") as string;
+  const type = formData.get("type") as ProductType;
   const category = formData.get("category") as string | null;
   const subCategory = formData.get("subCategory") as string | null;
   const description = formData.get("description") as string | null;

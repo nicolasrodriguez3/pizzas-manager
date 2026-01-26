@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -47,7 +47,7 @@ model OrganizationMember {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String       @unique
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       @default("OWNER") // OWNER, MEMBER
+  role           Role         @default(OWNER)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,7 +96,7 @@ model Product {
 
   name         String
   slug         String
-  type         String // "ELABORADO", "REVENTA", "OTHER" - could be an enum but string is flexible for SQLite
+  type         ProductType
   category     String? // e.g., "Clasicas", "Gourmet", "Bebidas Alcoholicas"
   subCategory  String? // e.g., "Pizzas", "Empanadas", "Bebidas" - subcategory within product type
   basePrice    Float
@@ -237,12 +237,12 @@ model StockMovement {
   ingredientId String
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 
-  type          String // "COMPRA", "AJUSTE", "RETIRO", "DEVOLUCION"
+  type          StockMovementType
   quantity      Float // Quantity (positive for entry, negative for exit)
   unit          String // Unit of the movement
   reason        String? // Reason for the movement
   referenceId   String? // Reference to purchase, sale, etc.
-  referenceType String? // "PURCHASE", "SALE", "ADJUSTMENT"
+  referenceType ReferenceType?
   movementDate  DateTime @default(now())
   notes         String? // Additional notes
 
@@ -252,4 +252,28 @@ model StockMovement {
   @@index([ingredientId])
   @@index([type])
   @@index([movementDate])
+}
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+enum ProductType {
+  ELABORADO
+  REVENTA
+  OTHER
+}
+
+enum StockMovementType {
+  COMPRA
+  AJUSTE
+  RETIRO
+  DEVOLUCION
+}
+
+enum ReferenceType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
 }

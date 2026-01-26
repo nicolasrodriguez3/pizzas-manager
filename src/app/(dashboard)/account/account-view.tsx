@@ -56,6 +56,7 @@ export function AccountView({ user, organization, isOwner }: AccountViewProps) {
       toast.success("Perfil actualizado correctamente");
     } catch (error) {
       toast.error("Error al actualizar el perfil");
+      console.error(error);
     } finally {
       setIsUpdatingProfile(false);
     }
@@ -68,6 +69,7 @@ export function AccountView({ user, organization, isOwner }: AccountViewProps) {
       toast.success("Organización actualizada correctamente");
     } catch (error) {
       toast.error("Error al actualizar la organización");
+      console.error(error);
     } finally {
       setIsUpdatingOrg(false);
     }

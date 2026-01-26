@@ -8,11 +8,12 @@ import {
   Users,
   Plus,
 } from "lucide-react";
+import type { RefAttributes } from "react";
 
 export interface NavItem {
   name: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<RefAttributes<SVGSVGElement>>;
   description?: string;
   badge?: string | number;
   quickActions?: QuickAction[];
@@ -21,7 +22,7 @@ export interface NavItem {
 export interface QuickAction {
   name: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<RefAttributes<SVGSVGElement>>;
   description: string;
 }
 
