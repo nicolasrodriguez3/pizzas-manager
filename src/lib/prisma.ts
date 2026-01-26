@@ -16,5 +16,5 @@ const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-console.log(process.env.DATABASE_URL);
+
 export { prisma };
