@@ -32,27 +32,31 @@ A comprehensive, multi-tenant solution designed for pizza businesses to manage c
 ### Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/nicolasrodriguez3/pizzas-manager.git
    cd my-app
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 3. **Environment Setup**:
    Create a `.env` file and configure your database and authentication secrets:
+
    ```env
-   DATABASE_URL="file:./dev.db"
+   DATABASE_URL="postgresql://costos_user:costos_pass@localhost:5432/costos"
    AUTH_SECRET="your-secret-here"
    ```
 
 4. **Database Initialization**:
+
    ```bash
-   pnpm prisma generate
-   pnpm prisma db push
+   pnpm db:up
+   pnpm prisma migrate dev
    ```
 
 5. **Run the development server**:
@@ -68,9 +72,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `prisma/`: Database schema and migrations
 - `public/`: Static assets
 - `generated/`: Generated Prisma client code
-- `middleware.ts`: Authentication and route protection
+- `proxy.ts`: Authentication and route protection
 
 ---
 
 Built with ❤️ for pizza entrepreneurs.
-
