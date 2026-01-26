@@ -14,6 +14,7 @@ import type {
   ActionState,
   RecipeItemInput,
   ProductBase,
+  ProductWithRelations,
 } from "@/types";
 import { useState, useActionState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +36,7 @@ import { CreateIngredientDialog } from "./CreateIngredientDialog";
 type ProductFormProps = {
   ingredients: IngredientWithStock[];
   products: (ProductBase & { cost: number })[];
-  initialData?: any; // Using any to avoid complex type matching with Prisma result, but ideally should be ProductWithRelations
+  initialData?: ProductWithRelations;
 };
 
 // Simple client-side unit conversion for preview
@@ -93,7 +94,7 @@ export function ProductForm({
 
   // Initialize recipe items
   const initialRecipeItems: RecipeItemInput[] =
-    initialData?.receipeItems?.map((item: any) => ({
+    initialData?.receipeItems?.map((item) => ({
       ingredientId: item.ingredientId,
       subProductId: item.subProductId,
       quantity: item.quantity,
@@ -306,7 +307,7 @@ export function ProductForm({
               rows={2}
               className="w-full resize-none"
               placeholder="Ingredientes clave, alérgenos, etc."
-              defaultValue={initialData?.description}
+              defaultValue={initialData?.description ?? undefined}
             />
           </div>
 
@@ -341,7 +342,7 @@ export function ProductForm({
                 type="text"
                 className="w-full"
                 placeholder="e.g., Clásicas"
-                defaultValue={initialData?.subCategory}
+                defaultValue={initialData?.subCategory ?? undefined}
               />
             </div>
           </div>
@@ -377,7 +378,7 @@ export function ProductForm({
                 min="0"
                 className="w-full"
                 placeholder="0.00"
-                defaultValue={initialData?.manualCost}
+                defaultValue={initialData?.manualCost ?? undefined}
               />
               <p className="text-xs text-gray-500 mt-1">
                 Ingrese el costo de compra/adquisición del producto

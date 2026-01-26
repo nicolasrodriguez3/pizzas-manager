@@ -1,6 +1,7 @@
 /**
  * Shared TypeScript types for the Pizza Manager application
  */
+import type { ProductType } from "@/config/constants";
 
 // --- Action Response Types ---
 
@@ -107,9 +108,11 @@ export type RecipeItem = {
 export type ProductBase = {
   id: string;
   name: string;
-  type: string;
+  type: ProductType;
   category?: string | null;
+  subCategory?: string | null;
   basePrice: number;
+  manualCost?: number | null;
   isActive: boolean;
   description?: string | null;
   createdAt: Date;
@@ -123,7 +126,14 @@ export type Product = ProductBase & {
 
 export type ProductWithCost = Product & {
   cost: number;
-  recipeItems?: RecipeItem[]; // Alias for consistency with display if needed
+};
+
+// Type for initialData in ProductForm, matching what's typical from Prisma with includes
+export type ProductWithRelations = ProductBase & {
+  receipeItems?: (RecipeItem & {
+    ingredient?: Ingredient | null;
+    subProduct?: ProductBase | null;
+  })[];
 };
 
 export type SaleItem = {
