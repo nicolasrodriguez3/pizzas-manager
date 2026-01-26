@@ -34,20 +34,6 @@ export const navigationItems: NavItem[] = [
     description: "Resumen general del negocio",
   },
   {
-    name: "Productos",
-    href: "/products",
-    icon: Package,
-    description: "Gestionar productos y recetas",
-    quickActions: [
-      {
-        name: "Nuevo producto",
-        href: "/products/new",
-        icon: Plus,
-        description: "Crear un nuevo producto",
-      },
-    ],
-  },
-  {
     name: "Ingredientes",
     href: "/ingredients",
     icon: ShoppingCart,
@@ -58,6 +44,20 @@ export const navigationItems: NavItem[] = [
         href: "/ingredients?edit=new",
         icon: Plus,
         description: "Agregar ingrediente",
+      },
+    ],
+  },
+  {
+    name: "Productos",
+    href: "/products",
+    icon: Package,
+    description: "Gestionar productos y recetas",
+    quickActions: [
+      {
+        name: "Nuevo producto",
+        href: "/products/new",
+        icon: Plus,
+        description: "Crear un nuevo producto",
       },
     ],
   },
