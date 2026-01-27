@@ -1,11 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import type { ActionState } from "@/types";
-import { auth } from "@/auth";
 
-export async function createIngredientPurchase(
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import type { ActionState, PurchaseInput } from "@/types";
+
+export async function createPurchase(
   prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
@@ -15,71 +16,89 @@ export async function createIngredientPurchase(
   }
   const organizationId = session.user.organizationId;
 
-  const ingredientId = formData.get("ingredientId") as string;
-  const quantity = parseFloat(formData.get("quantity") as string);
-  const unit = formData.get("unit") as string;
-  const unitCost = parseFloat(formData.get("unitCost") as string);
+  // Parse form data for PurchaseInput
+  const purchaseDate = formData.get("purchaseDate") as string;
   const invoiceNumber = formData.get("invoiceNumber") as string | null;
   const supplierName = formData.get("supplierName") as string | null;
   const notes = formData.get("notes") as string | null;
-  const purchaseDate = formData.get("purchaseDate") as string;
 
-  if (!ingredientId) {
-    return { message: "Debe seleccionar un ingrediente" };
+  // Get ingredients data (assuming JSON string or multiple form fields)
+  const ingredientsJson = formData.get("ingredients") as string;
+  let ingredients: PurchaseInput["ingredients"];
+  try {
+    ingredients = JSON.parse(ingredientsJson);
+  } catch {
+    return { message: "Datos de ingredientes inválidos" };
   }
 
-  if (!unit || !unit.trim()) {
-    return { message: "Debe especificar la unidad de compra" };
+  if (!ingredients || ingredients.length === 0) {
+    return { message: "Debe incluir al menos un ingrediente" };
   }
 
-  if (!quantity || quantity <= 0) {
-    return { message: "La cantidad debe ser mayor a 0" };
-  }
-
-  if (!unitCost || unitCost <= 0) {
-    return { message: "El costo unitario debe ser mayor a 0" };
+  // Validate ingredients
+  for (const ing of ingredients) {
+    if (
+      !ing.ingredientId ||
+      !ing.quantity ||
+      ing.quantity <= 0 ||
+      !ing.unitCost ||
+      ing.unitCost <= 0 ||
+      !ing.unit
+    ) {
+      return { message: "Datos de ingrediente inválidos" };
+    }
   }
 
   try {
-    // Crear compra
-    const purchase = await prisma.ingredientPurchase.create({
+    // Create Purchase
+    const purchase = await prisma.purchase.create({
       data: {
         organizationId,
-        ingredientId,
-        quantity,
-        unit,
-        unitCost,
+        purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(),
         invoiceNumber: invoiceNumber?.trim() || null,
         supplierName: supplierName?.trim() || null,
         notes: notes?.trim() || null,
-        purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(),
       },
     });
 
-    // Actualizar stock del ingrediente
-    await prisma.ingredient.update({
-      where: { id: ingredientId },
-      data: {
-        currentStock: {
-          increment: quantity,
+    // Create IngredientPurchases
+    for (const ing of ingredients) {
+      const ingredientPurchase = await prisma.ingredientPurchase.create({
+        data: {
+          organizationId,
+          purchaseId: purchase.id,
+          ingredientId: ing.ingredientId,
+          quantity: ing.quantity,
+          unit: ing.unit,
+          unitCost: ing.unitCost,
         },
-      },
-    });
+      });
 
-    // Crear movimiento de stock
-    await prisma.stockMovement.create({
-      data: {
-        organizationId,
-        ingredientId,
-        type: "COMPRA",
-        quantity,
-        unit,
-        reason: `Compra ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
-        referenceId: purchase.id,
-        referenceType: "PURCHASE",
-        notes: `Proveedor: ${supplierName || "N/A"}`,
-      },
-    });
+      // Update stock
+      await prisma.ingredient.update({
+        where: { id: ing.ingredientId },
+        data: {
+          currentStock: {
+            increment: ing.quantity,
+          },
+        },
+      });
+
+      // Create stock movement
+      await prisma.stockMovement.create({
+        data: {
+          organizationId,
+          ingredientId: ing.ingredientId,
+          type: "COMPRA",
+          quantity: ing.quantity,
+          unit: ing.unit,
+          reason: `Compra ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
+          referenceId: ingredientPurchase.id,
+          referenceType: "PURCHASE",
+          notes: `Proveedor: ${supplierName || "N/A"}`,
+        },
+      });
+    }
 
     revalidatePath("/ingredients");
     revalidatePath("/purchases");
@@ -89,23 +108,27 @@ export async function createIngredientPurchase(
       data: purchase,
     };
   } catch (error) {
-    console.error("Failed to create ingredient purchase:", error);
+    console.error("Failed to create purchase:", error);
     return { message: "Error al registrar la compra" };
   }
 }
 
-export async function getIngredientPurchases() {
+export async function getPurchases() {
   const session = await auth();
   if (!session?.user?.organizationId) return [];
 
-  return await prisma.ingredientPurchase.findMany({
+  return await prisma.purchase.findMany({
     where: { organizationId: session.user.organizationId },
     include: {
-      ingredient: {
-        select: {
-          id: true,
-          name: true,
-          unit: true,
+      ingredientPurchases: {
+        include: {
+          ingredient: {
+            select: {
+              id: true,
+              name: true,
+              unit: true,
+            },
+          },
         },
       },
     },
@@ -113,7 +136,7 @@ export async function getIngredientPurchases() {
   });
 }
 
-export async function updateIngredientPurchase(
+export async function updatePurchase(
   prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
@@ -123,82 +146,133 @@ export async function updateIngredientPurchase(
   }
   const organizationId = session.user.organizationId;
 
-  const id = formData.get("id") as string;
-  const quantity = parseFloat(formData.get("quantity") as string);
-  const unitCost = parseFloat(formData.get("unitCost") as string);
+  const purchaseId = formData.get("purchaseId") as string;
+  const purchaseDate = formData.get("purchaseDate") as string;
   const invoiceNumber = formData.get("invoiceNumber") as string | null;
   const supplierName = formData.get("supplierName") as string | null;
   const notes = formData.get("notes") as string | null;
-  const purchaseDate = formData.get("purchaseDate") as string;
 
-  if (!id) {
+  const ingredientsJson = formData.get("ingredients") as string;
+  let ingredients: PurchaseInput["ingredients"];
+  try {
+    ingredients = JSON.parse(ingredientsJson);
+  } catch {
+    return { message: "Datos de ingredientes inválidos" };
+  }
+
+  if (!purchaseId) {
     return { message: "ID de compra faltante" };
   }
 
-  if (!quantity || quantity <= 0) {
-    return { message: "La cantidad debe ser mayor a 0" };
+  if (!ingredients || ingredients.length === 0) {
+    return { message: "Debe incluir al menos un ingrediente" };
   }
 
-  if (!unitCost || unitCost <= 0) {
-    return { message: "El costo unitario debe ser mayor a 0" };
+  // Validate ingredients
+  for (const ing of ingredients) {
+    if (
+      !ing.ingredientId ||
+      !ing.quantity ||
+      ing.quantity <= 0 ||
+      !ing.unitCost ||
+      ing.unitCost <= 0 ||
+      !ing.unit
+    ) {
+      return { message: "Datos de ingrediente inválidos" };
+    }
   }
 
   try {
-    // Obtener compra original
-    const originalPurchase = await prisma.ingredientPurchase.findFirst({
-      where: {
-        id,
-        organizationId,
-      },
-      include: {
-        ingredient: true,
-      },
-    });
-
-    if (!originalPurchase) {
-      return { message: "Compra no encontrada" };
-    }
-
-    const quantityDiff = quantity - originalPurchase.quantity;
-
-    // Actualizar compra
-    await prisma.ingredientPurchase.update({
-      where: { id },
+    // Update Purchase
+    await prisma.purchase.update({
+      where: { id: purchaseId, organizationId },
       data: {
-        quantity,
-        unitCost,
+        purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(),
         invoiceNumber: invoiceNumber?.trim() || null,
         supplierName: supplierName?.trim() || null,
         notes: notes?.trim() || null,
-        purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(),
       },
     });
 
-    // Ajustar stock del ingrediente
-    if (Math.abs(quantityDiff) > 0.001) {
-      await prisma.ingredient.update({
-        where: { id: originalPurchase.ingredientId },
-        data: {
-          currentStock: {
-            increment: quantityDiff,
-          },
-        },
-      });
+    // Get existing IngredientPurchases
+    const existingPurchases = await prisma.ingredientPurchase.findMany({
+      where: { purchaseId, organizationId },
+    });
 
-      // Actualizar movimiento de stock existente
-      const existingMovement = await prisma.stockMovement.findFirst({
-        where: {
-          referenceId: id,
-          referenceType: "PURCHASE",
-        },
-      });
+    const newIngredientIds = ingredients.map((ing) => ing.ingredientId);
 
-      if (existingMovement) {
-        await prisma.stockMovement.update({
-          where: { id: existingMovement.id },
+    // Delete removed ingredients
+    for (const existing of existingPurchases) {
+      if (!newIngredientIds.includes(existing.ingredientId)) {
+        // Revert stock
+        await prisma.ingredient.update({
+          where: { id: existing.ingredientId },
+          data: { currentStock: { decrement: existing.quantity } },
+        });
+        // Delete movement
+        await prisma.stockMovement.deleteMany({
+          where: { referenceId: existing.id, referenceType: "PURCHASE" },
+        });
+        // Delete purchase
+        await prisma.ingredientPurchase.delete({ where: { id: existing.id } });
+      }
+    }
+
+    // Update or create ingredients
+    for (const ing of ingredients) {
+      const existing = existingPurchases.find(
+        (p) => p.ingredientId === ing.ingredientId,
+      );
+      if (existing) {
+        const quantityDiff = ing.quantity - existing.quantity;
+        await prisma.ingredientPurchase.update({
+          where: { id: existing.id },
           data: {
-            quantity,
-            reason: `Compra (editada) ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
+            quantity: ing.quantity,
+            unit: ing.unit,
+            unitCost: ing.unitCost,
+          },
+        });
+        if (Math.abs(quantityDiff) > 0.001) {
+          await prisma.ingredient.update({
+            where: { id: ing.ingredientId },
+            data: { currentStock: { increment: quantityDiff } },
+          });
+          await prisma.stockMovement.updateMany({
+            where: { referenceId: existing.id, referenceType: "PURCHASE" },
+            data: {
+              quantity: ing.quantity,
+              unit: ing.unit,
+              reason: `Compra (editada) ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
+              notes: `Proveedor: ${supplierName || "N/A"}`,
+            },
+          });
+        }
+      } else {
+        const newPurchase = await prisma.ingredientPurchase.create({
+          data: {
+            organizationId,
+            purchaseId,
+            ingredientId: ing.ingredientId,
+            quantity: ing.quantity,
+            unit: ing.unit,
+            unitCost: ing.unitCost,
+          },
+        });
+        await prisma.ingredient.update({
+          where: { id: ing.ingredientId },
+          data: { currentStock: { increment: ing.quantity } },
+        });
+        await prisma.stockMovement.create({
+          data: {
+            organizationId,
+            ingredientId: ing.ingredientId,
+            type: "COMPRA",
+            quantity: ing.quantity,
+            unit: ing.unit,
+            reason: `Compra ${invoiceNumber ? `Fact: ${invoiceNumber}` : "sin factura"}`,
+            referenceId: newPurchase.id,
+            referenceType: "PURCHASE",
             notes: `Proveedor: ${supplierName || "N/A"}`,
           },
         });
@@ -212,46 +286,55 @@ export async function updateIngredientPurchase(
       message: "Compra actualizada correctamente",
     };
   } catch (error) {
-    console.error("Failed to update ingredient purchase:", error);
+    console.error("Failed to update purchase:", error);
     return { message: "Error al actualizar la compra" };
   }
 }
 
-export async function deleteIngredientPurchase(id: string) {
+export async function deletePurchase(purchaseId: string) {
   const session = await auth();
   if (!session?.user?.organizationId) return;
 
   try {
-    const purchase = await prisma.ingredientPurchase.findFirst({
+    const ingredientPurchases = await prisma.ingredientPurchase.findMany({
       where: {
-        id,
+        purchaseId,
         organizationId: session.user.organizationId,
       },
     });
 
-    if (purchase) {
-      // Restar stock del ingrediente
+    for (const ip of ingredientPurchases) {
+      // Revert stock
       await prisma.ingredient.update({
-        where: { id: purchase.ingredientId },
+        where: { id: ip.ingredientId },
         data: {
           currentStock: {
-            decrement: purchase.quantity,
+            decrement: ip.quantity,
           },
         },
       });
 
-      // Eliminar movimiento de stock
+      // Delete stock movements
       await prisma.stockMovement.deleteMany({
         where: {
-          referenceId: id,
+          referenceId: ip.id,
           referenceType: "PURCHASE",
         },
       });
     }
 
+    // Delete IngredientPurchases
     await prisma.ingredientPurchase.deleteMany({
       where: {
-        id,
+        purchaseId,
+        organizationId: session.user.organizationId,
+      },
+    });
+
+    // Delete Purchase
+    await prisma.purchase.delete({
+      where: {
+        id: purchaseId,
         organizationId: session.user.organizationId,
       },
     });
@@ -259,6 +342,6 @@ export async function deleteIngredientPurchase(id: string) {
     revalidatePath("/ingredients");
     revalidatePath("/purchases");
   } catch (error) {
-    console.error("Failed to delete ingredient purchase:", error);
+    console.error("Failed to delete purchase:", error);
   }
 }

@@ -2,8 +2,8 @@ import { PurchaseForm } from "@/components/PurchaseForm";
 import { PurchaseHistory } from "@/components/PurchaseHistory";
 import { PageHeader } from "@/components/PageHeader";
 import { getIngredients } from "@/actions/ingredients";
-import type { IngredientPurchase, IngredientWithStock } from "@/types";
-import { getIngredientPurchases } from "@/actions/purchases";
+import type { Purchase, IngredientWithStock } from "@/types";
+import { getPurchases } from "@/actions/purchases";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Receipt, Blocks } from "lucide-react";
 
@@ -14,7 +14,7 @@ const breadcrumbs = [
 
 export default async function PurchasesPage() {
   const ingredients = (await getIngredients()) as IngredientWithStock[];
-  const purchases = (await getIngredientPurchases()) as IngredientPurchase[];
+  const purchases = (await getPurchases()) as Purchase[];
 
   return (
     <div className="min-h-screen p-8 space-y-8 bg-linear-to-br from-gray-50 to-white text-black">

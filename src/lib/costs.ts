@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { convertCost } from "@/actions/utils/unitConversion";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Calculates the cost of a product recursively.
@@ -18,7 +18,7 @@ export async function calculateProductCost(productId: string): Promise<number> {
           ingredient: {
             include: {
               purchases: {
-                orderBy: { purchaseDate: "desc" },
+                orderBy: { purchase: { purchaseDate: "desc" } },
                 take: 1,
               },
             },

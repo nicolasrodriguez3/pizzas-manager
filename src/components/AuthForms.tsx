@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
+
 import { authenticate, register, RegisterState } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function LoginForm() {
   const [errorMessage, dispatch, isPending] = useActionState(
@@ -34,7 +35,7 @@ export function LoginForm() {
           className="block text-sm font-medium text-gray-300 mb-1"
           htmlFor="password"
         >
-          Password
+          Contraseña
         </label>
         <input
           className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-orange-500 outline-none"
@@ -51,17 +52,17 @@ export function LoginForm() {
             href="/register"
             className="font-medium text-orange-400 hover:text-orange-300"
           >
-            Don't have an account? Sign up
+            ¿No tienes una cuenta? Regístrate
           </Link>
         </div>
       </div>
       <div>
         <Button
           variant="default"
-          className="w-full justify-center"
+          className="w-full justify-center bg-orange-600 hover:bg-orange-700 text-white"
           disabled={isPending}
         >
-          {isPending ? "Logging in..." : "Log in"}
+          {isPending ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
       </div>
       {errorMessage && (
@@ -92,7 +93,7 @@ export function RegisterForm() {
           className="block text-sm font-medium text-gray-300 mb-1"
           htmlFor="name"
         >
-          Name
+          Nombre
         </label>
         <input
           className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-orange-500 outline-none"
@@ -129,7 +130,7 @@ export function RegisterForm() {
           className="block text-sm font-medium text-gray-300 mb-1"
           htmlFor="password"
         >
-          Password
+          Contraseña
         </label>
         <input
           className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-orange-500 outline-none"
@@ -151,17 +152,17 @@ export function RegisterForm() {
             href="/login"
             className="font-medium text-orange-400 hover:text-orange-300"
           >
-            Already have an account? Log in
+            ¿Ya tienes una cuenta? Inicia sesión
           </Link>
         </div>
       </div>
       <div>
         <Button
           variant="default"
-          className="w-full justify-center"
+          className="w-full justify-center bg-orange-600 hover:bg-orange-700 text-white"
           disabled={isPending}
         >
-          {isPending ? "Creating account..." : "Create account"}
+          {isPending ? "Creando cuenta..." : "Crear cuenta"}
         </Button>
       </div>
       {state.message && (

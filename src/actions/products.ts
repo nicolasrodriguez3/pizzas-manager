@@ -1,11 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { ProductType } from "@/generated/prisma/client";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/auth";
+import { ProductType } from "@/generated/prisma/client";
 import { calculateProductCost } from "@/lib/costs";
+import { prisma } from "@/lib/prisma";
 import type { ActionState, RecipeItemInput } from "@/types";
 
 export async function getProducts() {
@@ -62,7 +63,7 @@ export async function getProductBySlug(slug: string) {
             include: {
               purchases: {
                 where: { organizationId: session.user.organizationId },
-                orderBy: { purchaseDate: "desc" },
+                orderBy: { purchase: { purchaseDate: "desc" } },
                 take: 1,
               },
             },
@@ -75,7 +76,7 @@ export async function getProductBySlug(slug: string) {
                     include: {
                       purchases: {
                         where: { organizationId: session.user.organizationId },
-                        orderBy: { purchaseDate: "desc" },
+                        orderBy: { purchase: { purchaseDate: "desc" } },
                         take: 1,
                       },
                     },

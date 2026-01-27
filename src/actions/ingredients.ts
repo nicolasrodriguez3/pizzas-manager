@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
-import { StockMovementType, ReferenceType } from "@/generated/prisma/client";
-import type { ActionState } from "@/types";
+
 import { auth } from "@/auth";
+import { ReferenceType, StockMovementType } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
+import type { ActionState } from "@/types";
 
 export async function getIngredients() {
   const session = await auth();
@@ -16,7 +17,8 @@ export async function getIngredients() {
     include: {
       purchases: {
         where: { organizationId: session.user.organizationId },
-        orderBy: { purchaseDate: "desc" },
+        include: { purchase: true },
+        orderBy: { purchase: { purchaseDate: "desc" } },
         take: 1,
       },
     },
@@ -26,7 +28,7 @@ export async function getIngredients() {
   return ingredients.map((ing) => ({
     ...ing,
     lastCost: ing.purchases[0]?.unitCost || 0,
-    lastPurchaseDate: ing.purchases[0]?.purchaseDate,
+    lastPurchaseDate: ing.purchases[0]?.purchase?.purchaseDate,
     isLowStock: ing.minStock && ing.currentStock <= ing.minStock,
   }));
 }
@@ -187,7 +189,8 @@ export async function getIngredientStock(id: string) {
     },
     include: {
       purchases: {
-        orderBy: { purchaseDate: "desc" },
+        include: { purchase: true },
+        orderBy: { purchase: { purchaseDate: "desc" } },
         take: 5,
       },
       stockMovements: {

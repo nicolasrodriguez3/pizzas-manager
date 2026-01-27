@@ -1,21 +1,18 @@
 "use client";
 
-import { deleteIngredientPurchase } from "@/actions/purchases";
-import type { IngredientPurchase } from "@/types";
+import { Calendar, DollarSign, Package, Trash2 } from "lucide-react";
+
+import { deletePurchase } from "@/actions/purchases";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Package, Calendar, DollarSign } from "lucide-react";
+import type { Purchase } from "@/types";
 import { FormattedDate } from "./FormattedDate";
 
-export function PurchaseHistory({
-  purchases,
-}: {
-  purchases: IngredientPurchase[];
-}) {
+export function PurchaseHistory({ purchases }: { purchases: Purchase[] }) {
   const handleDelete = async (id: string) => {
-    if (confirm("¿Está seguro de eliminar esta compra?")) {
-      await deleteIngredientPurchase(id);
+    if (confirm("¿Está seguro de eliminar esta compra completa?")) {
+      await deletePurchase(id);
     }
   };
 
@@ -36,69 +33,28 @@ export function PurchaseHistory({
         ) : (
           <div className="space-y-4">
             {purchases.map((purchase) => (
-              <div
-                key={purchase.id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-gray-900">
-                        {purchase.ingredient?.name}
-                      </h3>
-                      <Badge variant="outline">
-                        {purchase.quantity} {purchase.unit}
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Calendar className="w-4 h-4" />
+              <Card key={purchase.id} className="border border-gray-200">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-gray-600" />
                         <FormattedDate
                           date={purchase.purchaseDate}
                           type="date"
                         />
                       </div>
-
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <DollarSign className="w-4 h-4" />$
-                        {purchase.unitCost.toFixed(2)}/{purchase.unit}
-                      </div>
-
-                      <div className="text-gray-600">
-                        Total: $
-                        {(purchase.quantity * purchase.unitCost).toFixed(2)}
-                      </div>
-
                       {purchase.supplierName && (
-                        <div className="text-gray-600">
+                        <div className="text-sm text-gray-600">
                           Proveedor: {purchase.supplierName}
                         </div>
                       )}
+                      {purchase.invoiceNumber && (
+                        <div className="text-sm text-gray-600">
+                          Factura: {purchase.invoiceNumber}
+                        </div>
+                      )}
                     </div>
-
-                    {purchase.invoiceNumber && (
-                      <div className="mt-2 text-sm text-gray-500">
-                        Factura: {purchase.invoiceNumber}
-                      </div>
-                    )}
-
-                    {purchase.notes && (
-                      <div className="mt-2 text-sm text-gray-500">
-                        Notas: {purchase.notes}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => alert("Función de edición en desarrollo")}
-                      className="text-orange-600 hover:text-orange-700"
-                    >
-                      Editar
-                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -108,8 +64,52 @@ export function PurchaseHistory({
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
-                </div>
-              </div>
+                  {purchase.notes && (
+                    <div className="text-sm text-gray-500 mt-2">
+                      Notas: {purchase.notes}
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {purchase.ingredientPurchases?.map((ip) => (
+                      <div
+                        key={ip.id}
+                        className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="font-medium">
+                            {ip.ingredient?.name}
+                          </div>
+                          <Badge variant="outline">
+                            {ip.quantity} {ip.unit}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div>
+                            ${ip.unitCost.toFixed(2)}/{ip.unit}
+                          </div>
+                          <div className="font-medium">
+                            ${(ip.quantity * ip.unitCost).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex justify-end pt-2 border-t border-gray-200">
+                      <div className="flex items-center gap-2 text-lg font-bold">
+                        <DollarSign className="w-5 h-5" />
+                        Total: $
+                        {purchase.ingredientPurchases
+                          ?.reduce(
+                            (sum, ip) => sum + ip.quantity * ip.unitCost,
+                            0,
+                          )
+                          .toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

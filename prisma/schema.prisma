@@ -37,6 +37,7 @@ model Organization {
   ingredients         Ingredient[]
   sales               Sale[]
   fixedCosts          FixedCost[]
+  purchases           Purchase[]
   ingredientPurchases IngredientPurchase[]
   stockMovements      StockMovement[]
 }
@@ -208,22 +209,42 @@ model IngredientPurchase {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
   ingredientId String
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 
-  quantity      Float // Quantity purchased
-  unit          String // Unit of purchase (may differ from ingredient base unit)
-  unitCost      Float // Cost per unit
-  purchaseDate  DateTime @default(now())
-  invoiceNumber String? // Invoice number
-  supplierName  String? // Supplier name
-  notes         String? // Additional notes
+  quantity Float // Quantity purchased
+  unit     String // Unit of purchase
+  unitCost Float // Cost per unit
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
+  @@index([purchaseId])
   @@index([ingredientId])
+}
+
+// Purchase - Groups multiple ingredient purchases
+model Purchase {
+  id             String @id @default(cuid())
+  organizationId String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  purchaseDate  DateTime @default(now())
+  invoiceNumber String? // Invoice number
+  supplierName  String? // Supplier name
+  notes         String? // Additional notes
+
+  ingredientPurchases IngredientPurchase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
   @@index([purchaseDate])
 }
 
@@ -243,7 +264,7 @@ model StockMovement {
   reason        String? // Reason for the movement
   referenceId   String? // Reference to purchase, sale, etc.
   referenceType ReferenceType?
-  movementDate  DateTime @default(now())
+  movementDate  DateTime          @default(now())
   notes         String? // Additional notes
 
   createdAt DateTime @default(now())

@@ -3,8 +3,8 @@
  */
 import type { ProductType } from "@/config/constants";
 import type {
-  StockMovementType,
   ReferenceType,
+  StockMovementType,
 } from "@/generated/prisma/client";
 
 // --- Action Response Types ---
@@ -44,15 +44,26 @@ export type Ingredient = {
 export type IngredientPurchase = {
   id: string;
   organizationId: string;
+  purchaseId: string;
+  purchase?: Purchase | null;
   ingredientId: string;
   ingredient?: Ingredient | null;
   quantity: number;
   unit: string;
   unitCost: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// Nuevo: Compra (agrupa múltiples compras de ingredientes)
+export type Purchase = {
+  id: string;
+  organizationId: string;
   purchaseDate: Date;
   invoiceNumber?: string | null;
   supplierName?: string | null;
   notes?: string | null;
+  ingredientPurchases?: IngredientPurchase[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -185,15 +196,19 @@ export type SaleItemInput = {
 };
 
 // Nuevos: Form inputs para compras y stock
+export type PurchaseInput = {
+  purchaseDate?: string;
+  invoiceNumber?: string | null;
+  supplierName?: string | null;
+  notes?: string | null;
+  ingredients: IngredientPurchaseInput[];
+};
+
 export type IngredientPurchaseInput = {
   ingredientId: string;
   quantity: number;
   unit: string;
   unitCost: number;
-  invoiceNumber?: string | null;
-  supplierName?: string | null;
-  notes?: string | null;
-  purchaseDate?: string;
 };
 
 export type StockMovementInput = {
