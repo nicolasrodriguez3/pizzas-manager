@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
-import { SidebarTrigger } from "@/components/SidebarTrigger";
+import { TopBar } from "@/components/TopBar";
 import { MainContentWrapper } from "@/components/MainContentWrapper";
 import { SidebarProvider } from "@/store/sidebar-store";
 
@@ -48,12 +48,10 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SidebarProvider defaultCollapsed={defaultCollapsed}>
-          <div className="flex min-h-screen bg-gray-50">
+          <div className="relative flex min-h-screen bg-gray-50">
             <Sidebar user={session?.user} />
             <MainContentWrapper>
-              <header className="flex md:hidden bg-white border-b border-gray-200 px-6 py-4 shadow-sm items-center justify-between">
-                <SidebarTrigger />
-              </header>
+              <TopBar title="Pizza Manager" user={session?.user} />
               <main className="flex-1">{children}</main>
             </MainContentWrapper>
           </div>
