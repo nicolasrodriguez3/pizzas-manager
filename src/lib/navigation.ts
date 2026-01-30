@@ -1,19 +1,19 @@
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
   Calculator,
-  TrendingUp,
   DollarSign,
-  Users,
+  LayoutDashboard,
+  type LucideIcon,
+  Package,
   Plus,
+  ShoppingCart,
+  TrendingUp,
+  Users,
 } from "lucide-react";
-import type { RefAttributes } from "react";
 
 export interface NavItem {
   name: string;
   href: string;
-  icon: React.ComponentType<RefAttributes<SVGSVGElement>>;
+  icon: LucideIcon;
   description?: string;
   badge?: string | number;
   quickActions?: QuickAction[];
@@ -22,7 +22,7 @@ export interface NavItem {
 export interface QuickAction {
   name: string;
   href: string;
-  icon: React.ComponentType<RefAttributes<SVGSVGElement>>;
+  icon: LucideIcon;
   description: string;
 }
 

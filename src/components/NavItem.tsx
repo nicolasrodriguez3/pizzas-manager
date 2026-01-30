@@ -1,16 +1,17 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEffect, useState } from "react";
 import { NavItem } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
 
 interface NavItemProps {
   item: NavItem;
@@ -62,7 +63,7 @@ export function NavItemComponent({
                   "w-5 h-5 shrink-0",
                   isCollapsed && !isMobile ? "mr-0" : "mr-3",
                   isActive
-                    ? "text-orange-600"
+                    ? "text-orange-900"
                     : "text-gray-400 group-hover:text-gray-600",
                 )}
               />
