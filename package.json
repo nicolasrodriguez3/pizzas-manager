@@ -6,15 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "db:up": "docker compose -f docker-compose.local.yml up -d",
-    "db:down": "docker compose -f docker-compose.local.yml down",
+    "lint": "biome lint",
+
+    "db:up": "docker compose -f docker-compose.dev.yml up -d",
+    "db:down": "docker compose -f docker-compose.dev.yml down",
     "db:reset": "prisma migrate reset",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "dev:full": "pnpm db:up && pnpm db:migrate && pnpm dev"
+
+    "dev:full": "pnpm db:up && pnpm db:migrate && pnpm dev",
+    "prod:build": "pnpm db:deploy && pnpm db:generate && pnpm build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
