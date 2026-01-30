@@ -17,7 +17,14 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm prod:build
+
+# Prisma generate
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+RUN pnpm prisma generate
+
+# Build Next.js
+RUN pnpm build
 
 # ---------- runner ----------
 FROM node:20-alpine AS runner
