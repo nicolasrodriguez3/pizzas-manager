@@ -1,20 +1,44 @@
-FROM node:20-alpine
-
+# ---------- base ----------
+FROM node:20-alpine AS base
 WORKDIR /app
 
-# Dependencias
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+RUN corepack enable
 
-# Código
+# ---------- deps ----------
+FROM base AS deps
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# ---------- build ----------
+FROM base AS builder
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Prisma client
-RUN pnpm db:generate
-
-# Build Next
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 
+# ---------- runner ----------
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Descomentar si falla next/image
+# RUN apk add --no-cache libc6-compat
+
+# usuario no-root
+RUN addgroup -g 1001 -S nodejs \
+ && adduser -S nextjs -u 1001
+
+# solo lo necesario para standalone
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+USER nextjs
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["node", "server.js"]
