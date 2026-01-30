@@ -10,19 +10,77 @@ datasource db {
   provider = "postgresql"
 }
 
-// Users for authentication
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  email          String
+  emailVerified  Boolean  @default(false)
+  image          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  organizationId String?
 
+  // BetterAuth relations
+  sessions Session[]
+  accounts Account[]
+
+  // Application relations
+  organization OrganizationMember?
   ingredients  Ingredient[]
   products     Product[]
   sales        Sale[]
-  organization OrganizationMember?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 model Organization {
@@ -57,6 +115,7 @@ model OrganizationMember {
 }
 
 // Ingredients that go into Pizzas or are sold directly (if applicable, though usually Products are sold)
+
 model Ingredient {
   id     String @id @default(cuid())
   userId String
@@ -86,6 +145,7 @@ model Ingredient {
 }
 
 // Products are what is actually sold (Pizzas, Sodas, etc.)
+
 model Product {
   id     String @id @default(cuid())
   userId String
@@ -123,6 +183,7 @@ model Product {
 }
 
 // Link Table to define what ingredients go into a Product (mostly for Pizzas)
+
 model RecipeItem {
   id String @id @default(cuid())
 
@@ -146,6 +207,7 @@ model RecipeItem {
 }
 
 // A Sale transaction
+
 model Sale {
   id     String @id @default(cuid())
   userId String
@@ -166,6 +228,7 @@ model Sale {
 }
 
 // Individual items in a Sale
+
 model SaleItem {
   id String @id @default(cuid())
 
@@ -184,6 +247,7 @@ model SaleItem {
 }
 
 // Fixed Monthly Costs (e.g. Rent, Salaries, Services)
+
 model FixedCost {
   id             String       @id @default(cuid())
   organizationId String
@@ -203,6 +267,7 @@ model FixedCost {
 }
 
 // Ingredient purchases - Track ingredient buying history and costs
+
 model IngredientPurchase {
   id             String @id @default(cuid())
   organizationId String
@@ -228,6 +293,7 @@ model IngredientPurchase {
 }
 
 // Purchase - Groups multiple ingredient purchases
+
 model Purchase {
   id             String @id @default(cuid())
   organizationId String
@@ -249,6 +315,7 @@ model Purchase {
 }
 
 // Stock movements - Track all stock changes for audit
+
 model StockMovement {
   id             String @id @default(cuid())
   organizationId String
@@ -260,8 +327,8 @@ model StockMovement {
 
   type          StockMovementType
   quantity      Float // Quantity (positive for entry, negative for exit)
-  unit          String // Unit of the movement
-  reason        String? // Reason for the movement
+  unit          String // Unit of movement
+  reason        String? // Reason for movement
   referenceId   String? // Reference to purchase, sale, etc.
   referenceType ReferenceType?
   movementDate  DateTime          @default(now())

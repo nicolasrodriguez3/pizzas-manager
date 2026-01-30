@@ -1,9 +1,9 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { PAGINATION } from "@/config/constants";
-import type { DashboardStats } from "@/types";
 import { auth } from "@/auth";
+import { PAGINATION } from "@/config/constants";
+import { prisma } from "@/lib/prisma";
+import type { DashboardStats } from "@/types";
 
 export async function getDashboardStats(): Promise<DashboardStats> {
   const session = await auth();

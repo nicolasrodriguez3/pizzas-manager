@@ -1,54 +1,9 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { authConfig } from "./auth.config";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
-import type { User } from "@/types";
+import { headers } from "next/headers";
 
-async function getUser(email: string): Promise<User | null> {
-  try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    return user;
-  } catch (error) {
-    console.error("Failed to fetch user:", error);
-    throw new Error("Failed to fetch user.");
-  }
+import { authConfig } from "@/lib/auth";
+
+export async function auth() {
+  return await authConfig.api.getSession({
+    headers: await headers(),
+  });
 }
-
-export const { auth, signIn, signOut, handlers } = NextAuth({
-  ...authConfig,
-  providers: [
-    Credentials({
-      async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
-
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          const user = await getUser(email);
-          if (!user || !user.password) return null;
-
-          const passwordsMatch = await bcrypt.compare(password, user.password);
-
-          if (passwordsMatch) {
-            // Fetch organization
-            const member = await prisma.organizationMember.findFirst({
-              where: { userId: user.id },
-              orderBy: { createdAt: "asc" },
-            });
-
-            return {
-              ...user,
-              organizationId: member?.organizationId,
-            };
-          }
-        }
-
-        console.log("Invalid credentials");
-        return null;
-      },
-    }),
-  ],
-});

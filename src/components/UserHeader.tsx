@@ -1,10 +1,11 @@
-import Link from "next/link";
-import { auth } from "@/auth";
-import { handleSignOut } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
 import { UserIcon } from "@phosphor-icons/react/ssr";
+import Link from "next/link";
 
-export async function UserHeader() {
+import { handleSignOut } from "@/actions/auth";
+import { auth } from "@/auth";
+import { Button } from "@/components/ui/button";
+
+export default async function UserHeader() {
   const session = await auth();
 
   if (!session?.user) return null;
